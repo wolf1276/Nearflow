@@ -1,0 +1,16 @@
+[package]
+name = "nearflow-test-token"
+version = "0.1.0"
+edition = "2024"
+publish = false
+[lib]
+crate-type = ["cdylib", "rlib"]
+[dependencies]
+near-sdk = { version = "=5.28.0", features = ["legacy"] }
+near-contract-standards = "=5.28.0"
+[profile.release]
+codegen-units = 1
+opt-level = "z"
+lto = true
+panic = "abort"
+overflow-checks = true
