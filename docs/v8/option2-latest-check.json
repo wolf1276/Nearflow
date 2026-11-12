@@ -1,0 +1,274 @@
+{
+  "scope": "READ_ONLY_TESTNET_NOT_SIGNED_EXECUTION",
+  "approved_for_execution": false,
+  "observed_at_utc": "2026-11-12T07:14:18.113498+00:00",
+  "rpc": "https://rpc.testnet.fastnear.com",
+  "block": {
+    "height": 277330507,
+    "hash": "5kKtXYVAUo9ZYpUTwotMjkoZZx3QUYHFFSCvgMgxemgR",
+    "timestamp_nanosec": "1794467655383994804"
+  },
+  "pool_count": 2952,
+  "venue": {
+    "version": "1.9.19",
+    "owner": "reflabs.sputnikv2.testnet",
+    "boost_farm_id": "boostfarm.ref-finance.testnet",
+    "burrowland_id": "burrow.services.ref-labs.testnet",
+    "guardians": [
+      "napoleon.testnet",
+      "messages.testnet",
+      "pika8.testnet",
+      "u1.testnet"
+    ],
+    "pool_count": 2952,
+    "state": "Running",
+    "admin_fee_bps": 2000,
+    "cumulative_info_record_interval_sec": 720,
+    "wnear_id": "wrap.testnet",
+    "auto_whitelisted_postfix": [
+      ".tkns.testnet",
+      ".portalpad1.testnet",
+      "meme-cooking.testnet",
+      ".tkndev.testnet"
+    ]
+  },
+  "frozen_tokens": [],
+  "pools": {
+    "2022": {
+      "pool_kind": "DEGEN_SWAP",
+      "token_account_ids": [
+        "wrap.testnet",
+        "usdcc.ft.ref-labs.testnet"
+      ],
+      "amounts": [
+        "2370729556563811453669187789",
+        "16617291023"
+      ],
+      "total_fee": 5,
+      "shares_total_supply": "40355378856831923035166177574",
+      "amp": 10
+    },
+    "2642": {
+      "pool_kind": "SIMPLE_POOL",
+      "token_account_ids": [
+        "wrap.testnet",
+        "usdc.orderly.testnet"
+      ],
+      "amounts": [
+        "25301880543976038689321623",
+        "74118956"
+      ],
+      "total_fee": 30,
+      "shares_total_supply": "1000050230437916166089330",
+      "amp": 0
+    },
+    "2926": {
+      "pool_kind": "SIMPLE_POOL",
+      "token_account_ids": [
+        "musdc.heliquant.testnet",
+        "wrap.testnet"
+      ],
+      "amounts": [
+        "18468502",
+        "4730037125446142758534266"
+      ],
+      "total_fee": 30,
+      "shares_total_supply": "1000156638208284254413150",
+      "amp": 0
+    },
+    "2939": {
+      "pool_kind": "SIMPLE_POOL",
+      "token_account_ids": [
+        "wrap.testnet",
+        "usdc.parry.testnet"
+      ],
+      "amounts": [
+        "13336583576472164787318131",
+        "45688329"
+      ],
+      "total_fee": 25,
+      "shares_total_supply": "2597969088901748929134121",
+      "amp": 0
+    }
+  },
+  "quotes": [
+    {
+      "pool_id": 2022,
+      "token_in": "usdcc.ft.ref-labs.testnet",
+      "token_out": "wrap.testnet",
+      "amount_in": "1000000",
+      "result": {
+        "error": "wasm execution failed with error: HostError(GuestPanic { panic_msg: \"panicked at 'E129: Degens expired', ref-exchange/src/degen_swap/mod.rs:105:13\" })"
+      }
+    },
+    {
+      "pool_id": 2022,
+      "token_in": "wrap.testnet",
+      "token_out": "usdcc.ft.ref-labs.testnet",
+      "amount_in": "1000000000000000000000000",
+      "result": {
+        "error": "wasm execution failed with error: HostError(GuestPanic { panic_msg: \"panicked at 'E129: Degens expired', ref-exchange/src/degen_swap/mod.rs:105:13\" })"
+      }
+    },
+    {
+      "pool_id": 2642,
+      "token_in": "usdc.orderly.testnet",
+      "token_out": "wrap.testnet",
+      "amount_in": "1000000",
+      "result": "335827116443064514458867"
+    },
+    {
+      "pool_id": 2642,
+      "token_in": "wrap.testnet",
+      "token_out": "usdc.orderly.testnet",
+      "amount_in": "1000000000000000000000000",
+      "result": "2809876"
+    },
+    {
+      "pool_id": 2926,
+      "token_in": "musdc.heliquant.testnet",
+      "token_out": "wrap.testnet",
+      "amount_in": "1000000",
+      "result": "242266909636843906222334"
+    },
+    {
+      "pool_id": 2926,
+      "token_in": "wrap.testnet",
+      "token_out": "musdc.heliquant.testnet",
+      "amount_in": "1000000000000000000000000",
+      "result": "3215117"
+    },
+    {
+      "pool_id": 2939,
+      "token_in": "usdc.parry.testnet",
+      "token_out": "wrap.testnet",
+      "amount_in": "1000000",
+      "result": "284952466358281532825514"
+    },
+    {
+      "pool_id": 2939,
+      "token_in": "wrap.testnet",
+      "token_out": "usdc.parry.testnet",
+      "amount_in": "1000000000000000000000000",
+      "result": "3179422"
+    }
+  ],
+  "tokens": {
+    "usdcc.ft.ref-labs.testnet": {
+      "metadata": {
+        "spec": "ft-1.0.0",
+        "name": "USDC",
+        "symbol": "b-USDC",
+        "icon": "data:image/svg+xml,%3C%3Fxml version=%221.0%22 encoding=%22utf-8%22%3F%3E%3C!-- Generator: Adobe Illustrator 22.0.1, SVG Export Plug-In . SVG Version: 6.00 Build 0) --%3E%3Csvg version=%221.1%22 id=%22Layer_1%22 xmlns=%22http://www.w3.org/2000/svg%22 xmlns:xlink=%22http://www.w3.org/1999/xlink%22 x=%220px%22 y=%220px%22 viewBox=%220 0 256 256%22 style=%22enable-background:new 0 0 256 256;%22 xml:space=%22preserve%22%3E%3Cstyle type=%22text/css%22%3E .st0%7Bfill:%232775CA;%7D .st1%7Bfill:%23FFFFFF;%7D%0A%3C/style%3E%3Ccircle class=%22st0%22 cx=%22128%22 cy=%22128%22 r=%22128%22/%3E%3Cpath class=%22st1%22 d=%22M104,217c0,3-2.4,4.7-5.2,3.8C60,208.4,32,172.2,32,129.3c0-42.8,28-79.1,66.8-91.5c2.9-0.9,5.2,0.8,5.2,3.8 v7.5c0,2-1.5,4.3-3.4,5C69.9,65.4,48,94.9,48,129.3c0,34.5,21.9,63.9,52.6,75.1c1.9,0.7,3.4,3,3.4,5V217z%22/%3E%3Cpath class=%22st1%22 d=%22M136,189.3c0,2.2-1.8,4-4,4h-8c-2.2,0-4-1.8-4-4v-12.6c-17.5-2.4-26-12.1-28.3-25.5c-0.4-2.3,1.4-4.3,3.7-4.3 h9.1c1.9,0,3.5,1.4,3.9,3.2c1.7,7.9,6.3,14,20.3,14c10.3,0,17.7-5.8,17.7-14.4c0-8.6-4.3-11.9-19.5-14.4c-22.4-3-33-9.8-33-27.3 c0-13.5,10.3-24.1,26.1-26.3V69.3c0-2.2,1.8-4,4-4h8c2.2,0,4,1.8,4,4v12.7c12.9,2.3,21.1,9.6,23.8,21.8c0.5,2.3-1.3,4.4-3.7,4.4 h-8.4c-1.8,0-3.3-1.2-3.8-2.9c-2.3-7.7-7.8-11.1-17.4-11.1c-10.6,0-16.1,5.1-16.1,12.3c0,7.6,3.1,11.4,19.4,13.7 c22,3,33.4,9.3,33.4,28c0,14.2-10.6,25.7-27.1,28.3V189.3z%22/%3E%3Cpath class=%22st1%22 d=%22M157.2,220.8c-2.9,0.9-5.2-0.8-5.2-3.8v-7.5c0-2.2,1.3-4.3,3.4-5c30.6-11.2,52.6-40.7,52.6-75.1 c0-34.5-21.9-63.9-52.6-75.1c-1.9-0.7-3.4-3-3.4-5v-7.5c0-3,2.4-4.7,5.2-3.8C196,50.2,224,86.5,224,129.3 C224,172.2,196,208.4,157.2,220.8z%22/%3E%3C/svg%3E%0A",
+        "reference": null,
+        "reference_hash": null,
+        "decimals": 6
+      },
+      "storage_balance_bounds": {
+        "min": "1250000000000000000000",
+        "max": "1250000000000000000000"
+      }
+    },
+    "usdc.orderly.testnet": {
+      "metadata": {
+        "spec": "ft-1.0.0",
+        "name": "USD Coin",
+        "symbol": "USDC",
+        "icon": null,
+        "reference": null,
+        "reference_hash": null,
+        "decimals": 6
+      },
+      "storage_balance_bounds": {
+        "min": "1250000000000000000000",
+        "max": "1250000000000000000000"
+      }
+    },
+    "musdc.heliquant.testnet": {
+      "metadata": {
+        "spec": "ft-1.0.0",
+        "name": "Mock USDC",
+        "symbol": "mUSDC",
+        "icon": null,
+        "reference": null,
+        "reference_hash": null,
+        "decimals": 6
+      },
+      "storage_balance_bounds": {
+        "min": "1250000000000000000000",
+        "max": "1250000000000000000000"
+      }
+    },
+    "usdc.parry.testnet": {
+      "metadata": {
+        "spec": "ft-1.0.0",
+        "name": "USD Coin (Parry test)",
+        "symbol": "USDC",
+        "icon": null,
+        "reference": null,
+        "reference_hash": null,
+        "decimals": 6
+      },
+      "storage_balance_bounds": {
+        "min": "2420000000000000000000",
+        "max": "2420000000000000000000"
+      }
+    },
+    "wrap.testnet": {
+      "metadata": {
+        "spec": "ft-1.0.0",
+        "name": "Wrapped NEAR fungible token",
+        "symbol": "wNEAR",
+        "icon": null,
+        "reference": null,
+        "reference_hash": null,
+        "decimals": 24
+      },
+      "storage_balance_bounds": {
+        "min": "1250000000000000000000",
+        "max": "1250000000000000000000"
+      }
+    }
+  },
+  "feeds": {
+    "coinbase": {
+      "url": "https://api.coinbase.com/v2/prices/NEAR-USD/spot",
+      "observed_at_utc": "2026-11-12T07:14:54.356628+00:00",
+      "server_date": "Thu, 12 Nov 2026 07:14:54 GMT",
+      "body": {
+        "data": {
+          "amount": "3.52055",
+          "base": "NEAR",
+          "currency": "USD"
+        }
+      }
+    },
+    "binance": {
+      "url": "https://api.binance.com/api/v3/ticker/price?symbol=NEARUSDT",
+      "observed_at_utc": "2026-11-12T07:14:54.970310+00:00",
+      "server_date": "Thu, 12 Nov 2026 07:14:54 GMT",
+      "body": {
+        "symbol": "NEARUSDT",
+        "price": "3.52500000"
+      }
+    },
+    "kucoin": {
+      "url": "https://api.kucoin.com/api/v1/market/orderbook/level1?symbol=NEAR-USDT",
+      "observed_at_utc": "2026-11-12T07:15:02.348414+00:00",
+      "server_date": "Thu, 12 Nov 2026 07:15:02 GMT",
+      "body": {
+        "code": "200000",
+        "data": {
+          "time": 1794467699192,
+          "sequence": "7981397428",
+          "price": "3.5257",
+          "size": "428.9623",
+          "bestBid": "3.5242",
+          "bestBidSize": "9.1336",
+          "bestAsk": "3.5246",
+          "bestAskSize": "9.1287"
+        }
+      }
+    }
+  }
+}
