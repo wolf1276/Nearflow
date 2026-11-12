@@ -1,0 +1,6 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": { "incremental": false, "plugins": [], "types": ["node"] },
+  "include": ["../packages/adapters/**/*.ts", "../packages/risk/**/*.ts", "../packages/vault/**/*.ts", "../services/guardian/**/*.ts"],
+  "exclude": ["node_modules"]
+}
