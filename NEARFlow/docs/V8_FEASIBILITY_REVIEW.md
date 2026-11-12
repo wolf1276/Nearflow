@@ -2,7 +2,7 @@
 
 ## Disposition
 
-V8 is **not complete or activated**. The instruction to work on V8 authorizes this investigation, not a guessed venue/collateral choice, public spending budget, or bypass of S1–S3/D1. No credentials were loaded, transactions signed, contracts deployed, pools created or tokens moved.
+V8 is **not complete or activated**. The user has now approved **Option 2 in principle** (reuse an existing Rhea/Ref testnet pool/token), with a read-only compatibility review and implementation plan required before further approval. This does not approve a specific token/pool, spending budget, deployment or bypass of S1–S3/D1. No credentials were loaded, transactions signed, contracts deployed, pools created or tokens moved. The investigation checkpoint and saved public observations are in [v8/OPTION2_AUDIT_IN_PROGRESS.md](v8/OPTION2_AUDIT_IN_PROGRESS.md); the review remains unfinished.
 
 Unlike PAPER execution, genuine spot requires deciding where the strategy's actual collateral and acquired base token reside. Implementing a generic swap signer before that decision would bypass the existing custody constraints.
 
@@ -56,4 +56,4 @@ Before implementing/activating real spending, review the concrete ABI and tests 
 
 Local contract/adversarial tests and actual-Wasm signed Sandbox receipt chains must cover the reviewed authority and accounting first. Genuine venue integration then needs separately approved dedicated public roles/funding and recorded signed two-leg receipts, actual balances, failures/partials and restart evidence. S1–S3/D1 are not closed by this candidate review.
 
-**Decision requested:** approve the candidate venue and choose custom-token/new-pool versus existing-pool collateral. Public account IDs, funding/NEAR/liquidity limits and activation approval remain separate inputs. Until then, `execution-gate.ts` and Guardian's genuine/mixed-mode refusal remain unchanged.
+**Current decision:** Option 2 is approved in principle; exact token/pool compatibility and the final implementation plan still require review/approval. The custom-token/new-pool path is not being pursued. Public account IDs, funding/NEAR limits and activation approval remain separate inputs. `execution-gate.ts` and Guardian's genuine/mixed-mode refusal remain unchanged.

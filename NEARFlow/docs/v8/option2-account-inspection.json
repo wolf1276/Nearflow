@@ -1,0 +1,770 @@
+{
+  "rpc": "https://rpc.testnet.fastnear.com",
+  "block": {
+    "height": 277325802,
+    "hash": "9mNhTNrnoFLhwv4NtdrShEhusHqrGu5UkELgVRMFv1bW",
+    "timestamp_nanosec": "1794464913487618610"
+  },
+  "accounts": {
+    "ref-finance-101.testnet": {
+      "view_account": {
+        "amount": "368881439810713770249717979",
+        "block_hash": "9mNhTNrnoFLhwv4NtdrShEhusHqrGu5UkELgVRMFv1bW",
+        "block_height": 277325802,
+        "code_hash": "AEAm8sQ5KYZRgnpq2CN2NhX6d8QV76iRtiDpy5Ai6zDX",
+        "locked": "0",
+        "storage_paid_at": 0,
+        "storage_usage": 14117327
+      },
+      "view_access_key_list": {
+        "block_hash": "9mNhTNrnoFLhwv4NtdrShEhusHqrGu5UkELgVRMFv1bW",
+        "block_height": 277325802,
+        "keys": [
+          {
+            "access_key": {
+              "nonce": 59650543000001,
+              "permission": "FullAccess"
+            },
+            "public_key": "ed25519:7CJvbih2nrhuUyXK2SEU7wmPV8AKcpy2ZaU1tYJAKFWn"
+          },
+          {
+            "access_key": {
+              "nonce": 59650555000001,
+              "permission": "FullAccess"
+            },
+            "public_key": "ed25519:EbUMck1s8CH3C9EdVeFJhXz9YFZGK7MqQPZXyh2pUb1D"
+          },
+          {
+            "access_key": {
+              "nonce": 59650789000008,
+              "permission": "FullAccess"
+            },
+            "public_key": "ed25519:J2i9JVNq7C7GhY6ko6zjJWGp3QcStPMM7BQBRgvdXzzE"
+          }
+        ]
+      },
+      "wasm_sha256": "8918c505017ceb57646bdd863c34e4fe56e2edc7756963d6f4a1f38d6f9c34d2",
+      "exports": [
+        "upgrade",
+        "register_tokens",
+        "unregister_tokens",
+        "token_register_of",
+        "withdraw",
+        "exchange_callback_post_withdraw_near",
+        "exchange_callback_post_withdraw",
+        "exchange_callback_post_ft_transfer_call_withdraw",
+        "get_lostfound_token",
+        "list_lostfound_tokens",
+        "claim_lostfound",
+        "mft_balance_of",
+        "mft_total_supply",
+        "mft_has_registered",
+        "mft_register",
+        "mft_unregister",
+        "mft_transfer",
+        "mft_transfer_call",
+        "mft_transfer_all_call",
+        "mft_resolve_transfer",
+        "mft_metadata",
+        "set_owner",
+        "get_owner",
+        "retrieve_unmanaged_token",
+        "extend_guardians",
+        "remove_guardians",
+        "extend_auto_whitelisted_postfix",
+        "remove_auto_whitelisted_postfix",
+        "modify_boost_farm_id",
+        "modify_burrowland_id",
+        "modify_wnear_id",
+        "change_state",
+        "extend_whitelisted_tokens",
+        "remove_whitelisted_tokens",
+        "extend_frozenlist_tokens",
+        "remove_frozenlist_tokens",
+        "insert_referral",
+        "update_referral",
+        "remove_referral",
+        "modify_admin_fee",
+        "modify_total_fee",
+        "remove_exchange_fee_liquidity",
+        "withdraw_owner_token",
+        "stable_swap_ramp_amp",
+        "stable_swap_stop_ramp_amp",
+        "register_rated_token",
+        "unregister_rated_token",
+        "update_rated_token_extra_info",
+        "register_degen_token",
+        "update_degen_token",
+        "unregister_degen_token",
+        "register_degen_oracle_config",
+        "unregister_degen_oracle_config",
+        "update_degen_oracle_config",
+        "add_degen_pool_limit",
+        "update_degen_pool_limit",
+        "remove_pool_limit",
+        "migrate",
+        "batch_update_degen_token_by_price_oracle_callback",
+        "batch_update_degen_token_by_pyth_oracle_callback",
+        "storage_deposit",
+        "storage_withdraw",
+        "storage_unregister",
+        "storage_balance_bounds",
+        "storage_balance_of",
+        "ft_on_transfer",
+        "metadata",
+        "get_guardians",
+        "version",
+        "get_number_of_pools",
+        "get_pools",
+        "get_pool",
+        "get_pool_by_ids",
+        "get_pool_detail_infos",
+        "get_pool_detail_info",
+        "get_pool_detail_info_by_ids",
+        "get_stable_pool",
+        "get_rated_pool",
+        "get_degen_pool",
+        "get_pool_fee",
+        "get_pool_volumes",
+        "get_pool_volumes_by_ids",
+        "list_pool_volumes",
+        "get_pool_share_price",
+        "get_pool_shares",
+        "get_pool_shares_batch",
+        "get_pool_total_shares",
+        "get_deposits",
+        "get_tokens_paged",
+        "get_account_basic_info",
+        "get_shadow_records",
+        "get_deposit",
+        "get_return",
+        "get_return_by_output",
+        "list_referrals",
+        "get_frozenlist_tokens",
+        "get_whitelisted_tokens",
+        "get_user_whitelisted_tokens",
+        "get_user_storage_state",
+        "predict_add_simple_liquidity",
+        "predict_add_stable_liquidity",
+        "predict_remove_liquidity",
+        "predict_remove_liquidity_by_tokens",
+        "list_rated_tokens",
+        "batch_get_degen_tokens",
+        "list_degen_tokens",
+        "list_degen_oracle_configs",
+        "predict_add_rated_liquidity",
+        "predict_add_degen_liquidity",
+        "predict_remove_rated_liquidity_by_tokens",
+        "predict_remove_degen_liquidity_by_tokens",
+        "get_rated_return",
+        "get_degen_return",
+        "predict_swap_actions",
+        "batch_predict_swap_actions",
+        "predict_hot_zap",
+        "get_degen_pool_tvl",
+        "get_pool_limit_by_pool_id",
+        "get_pool_limit_paged",
+        "batch_views",
+        "get_unit_lpt_assets",
+        "shadow_action",
+        "on_burrow_liquidation",
+        "callback_on_shadow",
+        "callback_on_burrow_liquidation",
+        "register_pool_twap_record",
+        "unregister_pool_twap_record",
+        "modify_cumulative_info_record_interval_sec",
+        "sync_pool_twap_record",
+        "get_pool_twap_info_view",
+        "list_pool_twap_info_view",
+        "get_unit_share_twap_token_amounts",
+        "get_unit_share_token_amounts",
+        "extend_client_echo_token_id_whitelist",
+        "remove_client_echo_token_id_whitelist",
+        "get_client_echo_token_id_whitelist",
+        "extend_client_echo_sender_id_whitelist",
+        "remove_client_echo_sender_id_whitelist",
+        "get_client_echo_sender_id_whitelist",
+        "extend_secure_sender_whitelist",
+        "remove_secure_sender_whitelist",
+        "get_secure_sender_whitelist",
+        "donation_share",
+        "donation_token",
+        "new",
+        "add_simple_pool",
+        "add_stable_swap_pool",
+        "add_rated_swap_pool",
+        "add_degen_swap_pool",
+        "execute_actions_in_va",
+        "execute_actions",
+        "swap",
+        "swap_by_output",
+        "add_liquidity",
+        "add_stable_liquidity",
+        "remove_liquidity",
+        "remove_liquidity_by_tokens",
+        "update_token_rate",
+        "update_token_rate_callback",
+        "batch_update_degen_token_price",
+        "update_degen_token_price",
+        "update_degen_token_price_callback"
+      ],
+      "view_code": {
+        "block_hash": "9mNhTNrnoFLhwv4NtdrShEhusHqrGu5UkELgVRMFv1bW",
+        "block_height": 277325802,
+        "hash": "AEAm8sQ5KYZRgnpq2CN2NhX6d8QV76iRtiDpy5Ai6zDX",
+        "wasm_bytes": 894284
+      },
+      "storage_balance_bounds": {
+        "min": "1020000000000000000000",
+        "max": null
+      },
+      "storage_balance_of": {
+        "total": "125000000000000002000000",
+        "available": "121020000000000002000000"
+      },
+      "get_owner": "reflabs.sputnikv2.testnet"
+    },
+    "wrap.testnet": {
+      "view_account": {
+        "amount": "127311301775945157460319613119079",
+        "block_hash": "9mNhTNrnoFLhwv4NtdrShEhusHqrGu5UkELgVRMFv1bW",
+        "block_height": 277325802,
+        "code_hash": "DsbyUrKaSJAT91Pewfi71QExPLBooDp1z4sL9GUDhNHa",
+        "locked": "0",
+        "storage_paid_at": 0,
+        "storage_usage": 20968710
+      },
+      "view_access_key_list": {
+        "block_hash": "9mNhTNrnoFLhwv4NtdrShEhusHqrGu5UkELgVRMFv1bW",
+        "block_height": 277325802,
+        "keys": [
+          {
+            "access_key": {
+              "nonce": 2,
+              "permission": "FullAccess"
+            },
+            "public_key": "ed25519:2KMyVy4SwwSb7JLa9VpS4Qtmqh47jTZ87qNKnLTFjofR"
+          },
+          {
+            "access_key": {
+              "nonce": 87857002000001,
+              "permission": "FullAccess"
+            },
+            "public_key": "ed25519:4o41Pb7HgvqXb2tdWrLsRr6RgVEUJo7dcFfgdmZM4JWr"
+          },
+          {
+            "access_key": {
+              "nonce": 87857116000001,
+              "permission": "FullAccess"
+            },
+            "public_key": "ed25519:6epkUgJgmj1dBtSo5HfyU88rTBDYWXNrcp2QJQJ1XvmF"
+          },
+          {
+            "access_key": {
+              "nonce": 1,
+              "permission": "FullAccess"
+            },
+            "public_key": "ed25519:AJYBaVVUv6RZeqNx7KzLxE9Rif76w3Kme75LbtwpreFW"
+          },
+          {
+            "access_key": {
+              "nonce": 5,
+              "permission": "FullAccess"
+            },
+            "public_key": "ed25519:B1McjUYKq7tRgSRXTy5CZQuqD3hSH8C4SdQW462zL2WV"
+          }
+        ]
+      },
+      "wasm_sha256": "bf42d41cfe1ee902c117f198f39456c7c5aec37969ee0fd52057cee52a357f55",
+      "exports": [
+        "storage_minimum_balance",
+        "near_deposit",
+        "near_withdraw",
+        "new",
+        "ft_transfer",
+        "ft_transfer_call",
+        "ft_total_supply",
+        "ft_balance_of",
+        "ft_resolve_transfer",
+        "storage_deposit",
+        "storage_withdraw",
+        "storage_unregister",
+        "storage_balance_bounds",
+        "storage_balance_of",
+        "ft_metadata"
+      ],
+      "view_code": {
+        "block_hash": "9mNhTNrnoFLhwv4NtdrShEhusHqrGu5UkELgVRMFv1bW",
+        "block_height": 277325802,
+        "hash": "DsbyUrKaSJAT91Pewfi71QExPLBooDp1z4sL9GUDhNHa",
+        "wasm_bytes": 185251
+      },
+      "ft_metadata": {
+        "spec": "ft-1.0.0",
+        "name": "Wrapped NEAR fungible token",
+        "symbol": "wNEAR",
+        "icon": null,
+        "reference": null,
+        "reference_hash": null,
+        "decimals": 24
+      },
+      "storage_balance_bounds": {
+        "min": "1250000000000000000000",
+        "max": "1250000000000000000000"
+      },
+      "storage_balance_of": {
+        "total": "1250000000000000000000",
+        "available": "0"
+      },
+      "ft_balance_of": "453502926717950596090110775917"
+    },
+    "usdcc.ft.ref-labs.testnet": {
+      "view_account": {
+        "amount": "4549707303909683400003067",
+        "block_hash": "9mNhTNrnoFLhwv4NtdrShEhusHqrGu5UkELgVRMFv1bW",
+        "block_height": 277325802,
+        "code_hash": "4J2xZJBJjesWB6Ru13Ni4ShWxaBNcxkmU95W6SiDZGde",
+        "locked": "0",
+        "storage_paid_at": 0,
+        "storage_usage": 330822
+      },
+      "view_access_key_list": {
+        "block_hash": "9mNhTNrnoFLhwv4NtdrShEhusHqrGu5UkELgVRMFv1bW",
+        "block_height": 277325802,
+        "keys": [
+          {
+            "access_key": {
+              "nonce": 161667632000002,
+              "permission": "FullAccess"
+            },
+            "public_key": "ed25519:AJkmaZzEz6eey95z1qvHduLazewvMsQaWykvTwD8ryJZ"
+          }
+        ]
+      },
+      "wasm_sha256": "30f025f7b96681c49645b57b082362de64aa6cc54698e0837bd195f827f23389",
+      "exports": [
+        "contract_source_metadata",
+        "new_default_meta",
+        "new",
+        "mint",
+        "burn",
+        "set_token_name",
+        "set_token_symbol",
+        "set_token_icon",
+        "set_token_decimals",
+        "ft_transfer",
+        "ft_transfer_call",
+        "ft_total_supply",
+        "ft_balance_of",
+        "ft_resolve_transfer",
+        "storage_deposit",
+        "storage_withdraw",
+        "storage_unregister",
+        "storage_balance_bounds",
+        "storage_balance_of",
+        "ft_metadata"
+      ],
+      "view_code": {
+        "block_hash": "9mNhTNrnoFLhwv4NtdrShEhusHqrGu5UkELgVRMFv1bW",
+        "block_height": 277325802,
+        "hash": "4J2xZJBJjesWB6Ru13Ni4ShWxaBNcxkmU95W6SiDZGde",
+        "wasm_bytes": 244118
+      },
+      "ft_metadata": {
+        "spec": "ft-1.0.0",
+        "name": "USDC",
+        "symbol": "b-USDC",
+        "icon": "data:image/svg+xml,%3C%3Fxml version=%221.0%22 encoding=%22utf-8%22%3F%3E%3C!-- Generator: Adobe Illustrator 22.0.1, SVG Export Plug-In . SVG Version: 6.00 Build 0) --%3E%3Csvg version=%221.1%22 id=%22Layer_1%22 xmlns=%22http://www.w3.org/2000/svg%22 xmlns:xlink=%22http://www.w3.org/1999/xlink%22 x=%220px%22 y=%220px%22 viewBox=%220 0 256 256%22 style=%22enable-background:new 0 0 256 256;%22 xml:space=%22preserve%22%3E%3Cstyle type=%22text/css%22%3E .st0%7Bfill:%232775CA;%7D .st1%7Bfill:%23FFFFFF;%7D%0A%3C/style%3E%3Ccircle class=%22st0%22 cx=%22128%22 cy=%22128%22 r=%22128%22/%3E%3Cpath class=%22st1%22 d=%22M104,217c0,3-2.4,4.7-5.2,3.8C60,208.4,32,172.2,32,129.3c0-42.8,28-79.1,66.8-91.5c2.9-0.9,5.2,0.8,5.2,3.8 v7.5c0,2-1.5,4.3-3.4,5C69.9,65.4,48,94.9,48,129.3c0,34.5,21.9,63.9,52.6,75.1c1.9,0.7,3.4,3,3.4,5V217z%22/%3E%3Cpath class=%22st1%22 d=%22M136,189.3c0,2.2-1.8,4-4,4h-8c-2.2,0-4-1.8-4-4v-12.6c-17.5-2.4-26-12.1-28.3-25.5c-0.4-2.3,1.4-4.3,3.7-4.3 h9.1c1.9,0,3.5,1.4,3.9,3.2c1.7,7.9,6.3,14,20.3,14c10.3,0,17.7-5.8,17.7-14.4c0-8.6-4.3-11.9-19.5-14.4c-22.4-3-33-9.8-33-27.3 c0-13.5,10.3-24.1,26.1-26.3V69.3c0-2.2,1.8-4,4-4h8c2.2,0,4,1.8,4,4v12.7c12.9,2.3,21.1,9.6,23.8,21.8c0.5,2.3-1.3,4.4-3.7,4.4 h-8.4c-1.8,0-3.3-1.2-3.8-2.9c-2.3-7.7-7.8-11.1-17.4-11.1c-10.6,0-16.1,5.1-16.1,12.3c0,7.6,3.1,11.4,19.4,13.7 c22,3,33.4,9.3,33.4,28c0,14.2-10.6,25.7-27.1,28.3V189.3z%22/%3E%3Cpath class=%22st1%22 d=%22M157.2,220.8c-2.9,0.9-5.2-0.8-5.2-3.8v-7.5c0-2.2,1.3-4.3,3.4-5c30.6-11.2,52.6-40.7,52.6-75.1 c0-34.5-21.9-63.9-52.6-75.1c-1.9-0.7-3.4-3-3.4-5v-7.5c0-3,2.4-4.7,5.2-3.8C196,50.2,224,86.5,224,129.3 C224,172.2,196,208.4,157.2,220.8z%22/%3E%3C/svg%3E%0A",
+        "reference": null,
+        "reference_hash": null,
+        "decimals": 6
+      },
+      "storage_balance_bounds": {
+        "min": "1250000000000000000000",
+        "max": "1250000000000000000000"
+      },
+      "storage_balance_of": {
+        "total": "1250000000000000000000",
+        "available": "0"
+      },
+      "ft_balance_of": "2040404560348"
+    },
+    "usdc.orderly.testnet": {
+      "view_account": {
+        "amount": "107464170614427970388992144",
+        "block_hash": "9mNhTNrnoFLhwv4NtdrShEhusHqrGu5UkELgVRMFv1bW",
+        "block_height": 277325802,
+        "code_hash": "6mPGMGjPdf6SJwU7UP6dBUtdYhGfYbP6umSkVdEQ1N5M",
+        "locked": "0",
+        "storage_paid_at": 0,
+        "storage_usage": 2103992
+      },
+      "view_access_key_list": {
+        "block_hash": "9mNhTNrnoFLhwv4NtdrShEhusHqrGu5UkELgVRMFv1bW",
+        "block_height": 277325802,
+        "keys": [
+          {
+            "access_key": {
+              "nonce": 95466770000026,
+              "permission": "FullAccess"
+            },
+            "public_key": "ed25519:3v7uffLWML8ZAFm3KeeLhfB3uHvE9qb9QAch6m7AJrWm"
+          },
+          {
+            "access_key": {
+              "nonce": 95463182000043,
+              "permission": "FullAccess"
+            },
+            "public_key": "ed25519:CTzacJ8VvBcr2VebPiATnbWyWbisQc61VcDJm6cXVvtD"
+          }
+        ]
+      },
+      "wasm_sha256": "55a92a39fbaf69214d19dee46b361b38901954a67dd5f538782bf7dcc814b680",
+      "exports": [
+        "new_default_meta",
+        "new",
+        "mint",
+        "ft_transfer",
+        "ft_transfer_call",
+        "ft_total_supply",
+        "ft_balance_of",
+        "ft_resolve_transfer",
+        "storage_deposit",
+        "storage_withdraw",
+        "storage_unregister",
+        "storage_balance_bounds",
+        "storage_balance_of",
+        "ft_metadata"
+      ],
+      "view_code": {
+        "block_hash": "9mNhTNrnoFLhwv4NtdrShEhusHqrGu5UkELgVRMFv1bW",
+        "block_height": 277325802,
+        "hash": "6mPGMGjPdf6SJwU7UP6dBUtdYhGfYbP6umSkVdEQ1N5M",
+        "wasm_bytes": 1290311
+      },
+      "ft_metadata": {
+        "spec": "ft-1.0.0",
+        "name": "USD Coin",
+        "symbol": "USDC",
+        "icon": null,
+        "reference": null,
+        "reference_hash": null,
+        "decimals": 6
+      },
+      "storage_balance_bounds": {
+        "min": "1250000000000000000000",
+        "max": "1250000000000000000000"
+      },
+      "storage_balance_of": {
+        "total": "1250000000000000000000",
+        "available": "0"
+      },
+      "ft_balance_of": "853947846"
+    },
+    "musdc.heliquant.testnet": {
+      "view_account": {
+        "amount": "2003685144525839500000014",
+        "block_hash": "9mNhTNrnoFLhwv4NtdrShEhusHqrGu5UkELgVRMFv1bW",
+        "block_height": 277325802,
+        "code_hash": "AND6AoXcwyEi8EwQ8532JE9hwvgowvdHu1ANoUGXEiAe",
+        "locked": "0",
+        "storage_paid_at": 0,
+        "storage_usage": 154024
+      },
+      "view_access_key_list": {
+        "block_hash": "9mNhTNrnoFLhwv4NtdrShEhusHqrGu5UkELgVRMFv1bW",
+        "block_height": 277325802,
+        "keys": [
+          {
+            "access_key": {
+              "nonce": 276888520000001,
+              "permission": "FullAccess"
+            },
+            "public_key": "ed25519:DxqQnYeUEruj2K1uPqkWbzFHj4jubUS94jMBUwpJ4WLZ"
+          }
+        ]
+      },
+      "wasm_sha256": "8b280c6d20b886e339b1b2b0fad04f230e7305cfe1ce2cb61883952fe80347fb",
+      "exports": [
+        "__contract_abi",
+        "contract_source_metadata",
+        "ft_balance_of",
+        "ft_metadata",
+        "ft_resolve_transfer",
+        "ft_total_supply",
+        "ft_transfer",
+        "ft_transfer_call",
+        "mint",
+        "new",
+        "storage_balance_bounds",
+        "storage_balance_of",
+        "storage_deposit",
+        "storage_unregister",
+        "storage_withdraw"
+      ],
+      "view_code": {
+        "block_hash": "9mNhTNrnoFLhwv4NtdrShEhusHqrGu5UkELgVRMFv1bW",
+        "block_height": 277325802,
+        "hash": "AND6AoXcwyEi8EwQ8532JE9hwvgowvdHu1ANoUGXEiAe",
+        "wasm_bytes": 153361
+      },
+      "ft_metadata": {
+        "spec": "ft-1.0.0",
+        "name": "Mock USDC",
+        "symbol": "mUSDC",
+        "icon": null,
+        "reference": null,
+        "reference_hash": null,
+        "decimals": 6
+      },
+      "storage_balance_bounds": {
+        "min": "1250000000000000000000",
+        "max": "1250000000000000000000"
+      },
+      "storage_balance_of": {
+        "total": "1250000000000000000000",
+        "available": "0"
+      },
+      "ft_balance_of": "18468502"
+    },
+    "usdc.parry.testnet": {
+      "view_account": {
+        "amount": "2600106002650194600000087",
+        "block_hash": "9mNhTNrnoFLhwv4NtdrShEhusHqrGu5UkELgVRMFv1bW",
+        "block_height": 277325802,
+        "code_hash": "EHaWDn7qvuvqEu4uUE9DPCo3qPvRUmSQrgtZGvMen9U7",
+        "locked": "0",
+        "storage_paid_at": 0,
+        "storage_usage": 184746
+      },
+      "view_access_key_list": {
+        "block_hash": "9mNhTNrnoFLhwv4NtdrShEhusHqrGu5UkELgVRMFv1bW",
+        "block_height": 277325802,
+        "keys": [
+          {
+            "access_key": {
+              "nonce": 277141141000001,
+              "permission": "FullAccess"
+            },
+            "public_key": "ed25519:7L3BwdHdbbcrmcxsFeKdCd8ifQX8ukMJ3YXvFcSn9SXR"
+          }
+        ]
+      },
+      "wasm_sha256": "c5671b1935e258bc60e29f2fa4929309c90f998ff3dfa7ec2ca96a13e20c26dc",
+      "exports": [
+        "contract_source_metadata",
+        "faucet",
+        "faucet_status",
+        "ft_balance_of",
+        "ft_metadata",
+        "ft_resolve_transfer",
+        "ft_total_supply",
+        "ft_transfer",
+        "ft_transfer_call",
+        "mint",
+        "new",
+        "owner_id",
+        "set_faucet",
+        "storage_balance_bounds",
+        "storage_balance_of",
+        "storage_deposit",
+        "storage_unregister",
+        "storage_withdraw"
+      ],
+      "view_code": {
+        "block_hash": "9mNhTNrnoFLhwv4NtdrShEhusHqrGu5UkELgVRMFv1bW",
+        "block_height": 277325802,
+        "hash": "EHaWDn7qvuvqEu4uUE9DPCo3qPvRUmSQrgtZGvMen9U7",
+        "wasm_bytes": 179243
+      },
+      "ft_metadata": {
+        "spec": "ft-1.0.0",
+        "name": "USD Coin (Parry test)",
+        "symbol": "USDC",
+        "icon": null,
+        "reference": null,
+        "reference_hash": null,
+        "decimals": 6
+      },
+      "storage_balance_bounds": {
+        "min": "2420000000000000000000",
+        "max": "2420000000000000000000"
+      },
+      "storage_balance_of": {
+        "total": "2420000000000000000000",
+        "available": "0"
+      },
+      "ft_balance_of": "42292861"
+    },
+    "usdc.fakes.testnet": {
+      "view_account": {
+        "amount": "455620325315222243585143718",
+        "block_hash": "9mNhTNrnoFLhwv4NtdrShEhusHqrGu5UkELgVRMFv1bW",
+        "block_height": 277325802,
+        "code_hash": "E1E1CJYxT5FjzVSF55QoEWzv6dbqTe2yB6Hpmjks7JJ7",
+        "locked": "0",
+        "storage_paid_at": 0,
+        "storage_usage": 31641846
+      },
+      "view_access_key_list": {
+        "block_hash": "9mNhTNrnoFLhwv4NtdrShEhusHqrGu5UkELgVRMFv1bW",
+        "block_height": 277325802,
+        "keys": [
+          {
+            "access_key": {
+              "nonce": 65168544000004,
+              "permission": "FullAccess"
+            },
+            "public_key": "ed25519:5ZhDkNe1TGbS3VjzjvHJPpPLegpS3TyE4RGzjsiazqNA"
+          }
+        ]
+      },
+      "wasm_sha256": "c136a20b881d398b84dfdba7d9916a9a36e53ce0e0d120037a7a287822b476b4",
+      "exports": [
+        "new",
+        "mint",
+        "burn",
+        "set_token_name",
+        "set_icon",
+        "set_decimals",
+        "ft_transfer",
+        "ft_transfer_call",
+        "ft_total_supply",
+        "ft_balance_of",
+        "ft_resolve_transfer",
+        "storage_deposit",
+        "storage_withdraw",
+        "storage_unregister",
+        "storage_balance_bounds",
+        "storage_balance_of",
+        "ft_metadata"
+      ],
+      "view_code": {
+        "block_hash": "9mNhTNrnoFLhwv4NtdrShEhusHqrGu5UkELgVRMFv1bW",
+        "block_height": 277325802,
+        "hash": "E1E1CJYxT5FjzVSF55QoEWzv6dbqTe2yB6Hpmjks7JJ7",
+        "wasm_bytes": 205446
+      },
+      "ft_metadata": {
+        "spec": "ft-1.0.0",
+        "name": "Bridged USDC",
+        "symbol": "USDC.e",
+        "icon": "data:image/svg+xml,%3Csvg width='32' height='32' viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Ccircle cx='16' cy='16' r='16' fill='%232775C9'/%3E%3Cpath d='M15.75 27.5C9.26 27.5 4 22.24 4 15.75S9.26 4 15.75 4 27.5 9.26 27.5 15.75A11.75 11.75 0 0115.75 27.5zm-.7-16.11a2.58 2.58 0 00-2.45 2.47c0 1.21.74 2 2.31 2.33l1.1.26c1.07.25 1.51.61 1.51 1.22s-.77 1.21-1.77 1.21a1.9 1.9 0 01-1.8-.91.68.68 0 00-.61-.39h-.59a.35.35 0 00-.28.41 2.73 2.73 0 002.61 2.08v.84a.705.705 0 001.41 0v-.85a2.62 2.62 0 002.59-2.58c0-1.27-.73-2-2.46-2.37l-1-.22c-1-.25-1.47-.58-1.47-1.14 0-.56.6-1.18 1.6-1.18a1.64 1.64 0 011.59.81.8.8 0 00.72.46h.47a.42.42 0 00.31-.5 2.65 2.65 0 00-2.38-2v-.69a.705.705 0 00-1.41 0v.74zm-8.11 4.36a8.79 8.79 0 006 8.33h.14a.45.45 0 00.45-.45v-.21a.94.94 0 00-.58-.87 7.36 7.36 0 010-13.65.93.93 0 00.58-.86v-.23a.42.42 0 00-.56-.4 8.79 8.79 0 00-6.03 8.34zm17.62 0a8.79 8.79 0 00-6-8.32h-.15a.47.47 0 00-.47.47v.15a1 1 0 00.61.9 7.36 7.36 0 010 13.64 1 1 0 00-.6.89v.17a.47.47 0 00.62.44 8.79 8.79 0 005.99-8.34z' fill='%23FFF'/%3E%3C/g%3E%3C/svg%3E",
+        "reference": null,
+        "reference_hash": null,
+        "decimals": 6
+      },
+      "storage_balance_bounds": {
+        "min": "1250000000000000000000",
+        "max": "1250000000000000000000"
+      },
+      "storage_balance_of": {
+        "total": "1250000000000000000000",
+        "available": "0"
+      },
+      "ft_balance_of": "11500004236418530432672917"
+    }
+  },
+  "views": {
+    "get_whitelisted_tokens": [
+      "wrap.testnet",
+      "banana.ft-fin.testnet",
+      "nusdc.ft-fin.testnet",
+      "nusdt.ft-fin.testnet",
+      "rft.tokenfactory.testnet",
+      "usdc.fakes.testnet",
+      "usdt.fakes.testnet",
+      "dai.fakes.testnet",
+      "weth.fakes.testnet",
+      "hapi.fakes.testnet",
+      "ft.shankyt.testnet",
+      "ref.fakes.testnet",
+      "tiptoken.testnet",
+      "eth.fakes.testnet",
+      "aurora.fakes.testnet",
+      "xcorn.v1.corndao.testnet",
+      "dev-1703408285864-78771675931592",
+      "v2-nearx.staderlabs.testnet",
+      "splitfund-3-d7ce.factory.splitfund.testnet",
+      "gem.thegame.testnet",
+      "gold.thegame.testnet",
+      "elixir.thegame.testnet",
+      "usdn.testnet",
+      "lnc.factory.tokenhub.testnet",
+      "wbtc.fakes.testnet",
+      "hbtc.fakes.testnet",
+      "cusd.fakes.testnet",
+      "linear-protocol.testnet",
+      "meta-v2.pool.testnet",
+      "skyward.fakes.testnet",
+      "v010.refve.testnet",
+      "aurora",
+      "usdt.itachicara.testnet",
+      "usdc.itachicara.testnet",
+      "corn.corndao.testnet",
+      "xcorn.corndao.testnet",
+      "stnear.testnet",
+      "dbio.fakes.testnet",
+      "oct.fakes.testnet",
+      "toptoken.testnet",
+      "phoenix-bonds.testnet",
+      "usdt.develop.v1.omomo-finance.testnet",
+      "wnear.develop.v1.omomo-finance.testnet",
+      "usdc.orderly.testnet",
+      "ref.orderly.testnet",
+      "wbtc.orderly.testnet",
+      "sweat.orderly.testnet",
+      "3e2210e1184b45b64c8a434c0a7e7b23cc04ea7eb7a6c3c32520d03d4afcb8af",
+      "usdtt.fakes.testnet",
+      "neat.nrc-20.testnet",
+      "token.1689937928.burrow.testnet",
+      "absol.fakes.testnet",
+      "wsol.fakes.testnet",
+      "a663b0.fakes.testnet",
+      "853d95.fakes.testnet",
+      "usdtt.ft.ref-labs.testnet",
+      "usdcc.ft.ref-labs.testnet",
+      "usdte.ft.ref-labs.testnet",
+      "usdce.ft.ref-labs.testnet",
+      "daie.ft.ref-labs.testnet",
+      "frax.ft.ref-labs.testnet",
+      "sfrax.ft.ref-labs.testnet",
+      "brrr.ft.ref-labs.testnet",
+      "eth.ft.ref-labs.testnet",
+      "aurora.ft.ref-labs.testnet",
+      "woo.ft.ref-labs.testnet",
+      "wbtc.ft.ref-labs.testnet",
+      "linear.ft.ref-labs.testnet",
+      "stnear.ft.ref-labs.testnet",
+      "nearxv2.ft.ref-labs.testnet",
+      "dev-20240103091543-78946249092411",
+      "dev-20240103092617-93971264224721",
+      "deltausdc.testnet",
+      "deltanear.testnet",
+      "deltaeth.testnet",
+      "deltabtc.testnet",
+      "deltalonk.testnet",
+      "rated-swap.v2.guild-covenant.testnet",
+      "rated-swap.guild-covenant.testnet",
+      "usdc.betvex.testnet",
+      "token.betvex.testnet",
+      "staker003.trufin.testnet",
+      "nbtc2-nsp.testnet",
+      "lonk.fakes.testnet",
+      "blackdragon.fakes.testnet",
+      "willa.fakes.testnet",
+      "four.tknx.testnet",
+      "five.tknx.testnet",
+      "willa.tkns.testnet",
+      "rfh_1763539299596098149.portalpad1.testnet",
+      "xrhea-dev.testnet",
+      "rhea-dev.testnet",
+      "rflct.testnet"
+    ],
+    "get_user_whitelisted_tokens": [
+      "pesante.testnet",
+      "dev-1666687014300-54945171609768"
+    ]
+  },
+  "scope": "READ_ONLY_CODE_AND_PUBLIC_ACCESS_KEYS_NOT_AUDIT_CERTIFICATION"
+}
