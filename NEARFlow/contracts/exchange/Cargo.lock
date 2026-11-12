@@ -2257,10 +2257,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "nearflow-funding"
+version = "0.1.0"
+dependencies = [
+ "borsh",
+ "serde",
+]
+
+[[package]]
 name = "nearflow-perps"
 version = "0.1.0"
 dependencies = [
  "near-sdk",
+ "nearflow-funding",
  "uint 0.10.2",
 ]
 

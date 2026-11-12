@@ -10,6 +10,10 @@ impl Exchange {
             "insurance":U128(self.insurance), "total_deposited":U128(self.total), "deposit_cap":U128(self.cap),
             "model":"isolated-bilateral-capped", "fee_bps":3, "oracle_max_age_seconds":ORACLE_MAX_AGE})
     }
+    /// One execution context prevents status, prices and funding from crossing revisions.
+    pub fn funding_snapshot(&self) -> near_sdk::serde_json::Value {
+        json!({"timestamp": now(), "status": self.status(), "markets": self.get_markets()})
+    }
     pub fn get_markets(&self) -> Vec<Market> {
         self.markets
             .iter()
@@ -87,8 +91,27 @@ impl Exchange {
         let Some(a) = self.accounts.get(&account_id) else {
             return vec![];
         };
-        a.positions
-            .iter()
+        self.book_positions(account_id, None, a.positions)
+    }
+    pub fn strategy_positions(&self, strategy_id: U64) -> Vec<PositionView> {
+        let s = self.strategies.get(&strategy_id.0).expect("Unknown strategy");
+        self.book_positions(s.owner_id, Some(strategy_id), s.positions)
+    }
+    pub fn strategy_orders(&self, strategy_id: U64) -> Vec<Order> {
+        let s = self.strategies.get(&strategy_id.0).expect("Unknown strategy");
+        let mut result = s.history;
+        for id in s.orders {
+            let o = self.orders.get(&id).unwrap();
+            result.retain(|v| v.nonce != o.nonce);
+            result.push(o);
+        }
+        result.sort_by_key(|o| o.id.0);
+        result
+    }
+}
+impl Exchange {
+    fn book_positions(&self, account_id: AccountId, strategy_id: Option<U64>, ids: Vec<u64>) -> Vec<PositionView> {
+        ids.iter()
             .map(|id| {
                 let mut p = self.pairs.get(id).unwrap();
                 let m = self.market(p.market_id);
@@ -100,6 +123,7 @@ impl Exchange {
                 let risk = is_liquidatable(&p, &m);
                 let (_, _, pnl) = payout(&p, m.price.0);
                 PositionView {
+                    strategy_id,
                     position_id: p.id,
                     owner: account_id.clone(),
                     counterparty: if is_long {
@@ -120,6 +144,9 @@ impl Exchange {
             })
             .collect()
     }
+}
+#[near]
+impl Exchange {
     pub fn account_health(&self, account_id: AccountId, token_id: AccountId) -> Health {
         self.assert_token(&token_id);
         let Some(a) = self.accounts.get(&account_id) else {
@@ -152,7 +179,7 @@ impl Exchange {
                 10_000,
             )
             .max(1);
-            stale |= now().saturating_sub(m.timestamp) > ORACLE_MAX_AGE;
+            stale |= !oracle_fresh(&m, now());
             liquidatable |= p.liquidatable;
         }
         Health {
@@ -174,7 +201,7 @@ impl Exchange {
         for (_, o) in self
             .orders
             .iter()
-            .filter(|(_, o)| o.market_id == market_id && o.expiry_ts.0 > now())
+            .filter(|(_, o)| o.market_id == market_id && o.expiry_ts.0 > now() && self.order_book_active(o))
         {
             let book = if o.is_long { &mut bids } else { &mut asks };
             *book.entry(o.limit_price.0).or_default() += o.remaining.0;
@@ -211,7 +238,7 @@ impl Exchange {
                 market_id.is_none_or(|id| t.market_id == id)
                     && account_id
                         .as_ref()
-                        .is_none_or(|id| id == &t.maker || id == &t.taker)
+                        .is_none_or(|id| (id == &t.maker && t.maker_strategy_id.is_none()) || (id == &t.taker && t.taker_strategy_id.is_none()))
             })
             .take(limit.unwrap_or(50).min(HISTORY_RING as u32) as usize)
             .collect()
@@ -220,13 +247,13 @@ impl Exchange {
         (self.next_funding.saturating_sub(HISTORY_RING)..self.next_funding)
             .rev()
             .filter_map(|id| self.funding.get(&(id % HISTORY_RING)))
-            .filter(|f| f.long == account_id || f.short == account_id)
+            .filter(|f| (f.long == account_id && f.long_strategy_id.is_none()) || (f.short == account_id && f.short_strategy_id.is_none()))
             .take(limit.unwrap_or(50).min(HISTORY_RING as u32) as usize)
             .collect()
     }
     pub fn match_candidate(&self, market_id: u32) -> Option<near_sdk::serde_json::Value> {
         let m = self.market(market_id);
-        if self.paused || m.paused || now().saturating_sub(m.timestamp) > ORACLE_MAX_AGE {
+        if self.paused || m.paused || !oracle_fresh(&m, now()) {
             return None;
         }
         let mut orders: Vec<Order> = self
@@ -255,7 +282,7 @@ impl Exchange {
             .iter()
             .filter_map(|(_, mut p)| {
                 let m = self.market(p.market_id);
-                if now().saturating_sub(m.timestamp) > ORACLE_MAX_AGE {
+                if !oracle_fresh(&m, now()) {
                     return None;
                 }
                 let (long, short) = funded_margins(&p, funding_index(&m, now()));
@@ -275,9 +302,49 @@ impl Exchange {
             .iter()
             .map(|(_, p)| p.long_margin.0 + p.short_margin.0)
             .sum();
-        let liabilities = free + orders + positions + self.insurance + self.pending_withdrawals;
+        let strategy_free: u128 = self.strategies.iter().map(|(_, s)| s.available.0).sum();
+        let strategy_pending: u128 = self
+            .strategies
+            .iter()
+            .map(|(_, s)| s.pending_withdrawals.0)
+            .sum();
+        let request_total: u128 = self
+            .strategy_withdrawals
+            .iter()
+            .map(|(_, r)| r.amount.0)
+            .sum();
+        let request_count: u64 = self
+            .strategies
+            .iter()
+            .map(|(_, s)| s.pending_count as u64)
+            .sum();
+        let pending_balanced = strategy_pending == request_total
+            && strategy_pending <= self.pending_withdrawals
+            && request_count == self.strategy_withdrawals.len();
+        let books_balanced = self.orders.iter().all(|(id, o)| {
+            let a = self.trading_account(&o.owner, o.strategy_id);
+            a.orders.iter().filter(|v| **v == id).count() == 1
+                && o.strategy_id.is_none_or(|sid| self.strategies.get(&sid.0).is_some_and(|s| s.market_id == o.market_id))
+        }) && self.pairs.iter().all(|(id, p)| {
+            [(&p.long, p.long_strategy_id), (&p.short, p.short_strategy_id)].iter().all(|(owner, book)| {
+                self.trading_account(owner, *book).positions.iter().filter(|v| **v == id).count() == 1
+                    && book.is_none_or(|sid| self.strategies.get(&sid.0).is_some_and(|s| s.market_id == p.market_id))
+            })
+        }) && self.strategies.iter().all(|(id, s)| {
+            s.orders.iter().all(|oid| self.orders.get(oid).is_some_and(|o| o.owner == s.owner_id && o.strategy_id == Some(U64(id))))
+                && s.positions.iter().all(|pid| self.pairs.get(pid).is_some_and(|p| (p.long == s.owner_id && p.long_strategy_id == Some(U64(id))) || (p.short == s.owner_id && p.short_strategy_id == Some(U64(id)))))
+        });
+        let books_balanced = books_balanced && self.accounts.iter().all(|(_, a)| {
+            a.orders.iter().all(|oid| self.orders.get(oid).is_some_and(|o| o.owner == a.account_id && o.strategy_id.is_none()))
+                && a.positions.iter().all(|pid| self.pairs.get(pid).is_some_and(|p| (p.long == a.account_id && p.long_strategy_id.is_none()) || (p.short == a.account_id && p.short_strategy_id.is_none())))
+        });
+        // Strategy pending amounts are already in the global pending bucket.
+        let liabilities =
+            free + orders + positions + strategy_free + self.insurance + self.pending_withdrawals;
         json!({"custody":U128(self.total),"liabilities":U128(liabilities),"free":U128(free),"orders":U128(orders),
-            "positions":U128(positions),"insurance":U128(self.insurance),"pending_withdrawals":U128(self.pending_withdrawals),"balanced":liabilities==self.total})
+            "positions":U128(positions),"strategy_free":U128(strategy_free),"strategy_pending":U128(strategy_pending),
+            "strategy_pending_balanced":pending_balanced,"insurance":U128(self.insurance),
+            "pending_withdrawals":U128(self.pending_withdrawals),"books_balanced":books_balanced,"balanced":liabilities==self.total && pending_balanced && books_balanced})
     }
 }
 fn decimal(value: u128, decimals: u32) -> String {

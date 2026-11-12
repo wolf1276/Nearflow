@@ -25,19 +25,36 @@ pub fn raw_pnl(p: &Pair, price: u128) -> i128 {
         i128::try_from(price).unwrap() - i128::try_from(p.entry_price.0).unwrap(),
     )
 }
+pub fn oracle_fresh(m: &Market, now: u64) -> bool {
+    m.price.0 > 0
+        && m.timestamp <= now
+        && now - m.timestamp <= m.controller.params.oracle_max_age_sec
+}
 pub fn funding_index(m: &Market, now: u64) -> i128 {
+    if m.timestamp > now || m.controller.rate_applied_at > now {
+        return m.funding_index.0;
+    }
     // Charge at the last rate for at most the valid lifetime of its oracle price.
     // A keeper outage must not accumulate unbounded charges using stale data.
-    let end = now.min(m.timestamp.saturating_add(ORACLE_MAX_AGE));
+    let end = now
+        .min(
+            m.timestamp
+                .saturating_add(m.controller.params.oracle_max_age_sec),
+        )
+        .min(
+            m.controller
+                .rate_applied_at
+                .saturating_add(nearflow_funding::INTERVAL),
+        );
     let elapsed = end.saturating_sub(m.funding_updated_at);
     let delta = mul_div(
         m.price.0,
-        m.funding_rate_bps.unsigned_abs() as u128 * elapsed as u128,
-        10_000 * 3600,
+        m.funding_rate_ppm.unsigned_abs() as u128 * elapsed as u128,
+        nearflow_funding::SCALE as u128 * nearflow_funding::INTERVAL as u128,
     );
     m.funding_index
         .0
-        .checked_add(if m.funding_rate_bps < 0 {
+        .checked_add(if m.funding_rate_ppm < 0 {
             -(delta as i128)
         } else {
             delta as i128

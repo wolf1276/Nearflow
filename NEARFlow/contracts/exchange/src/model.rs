@@ -50,14 +50,42 @@ pub struct Market {
     pub timestamp: u64,
     pub last_price: U128,
     pub funding_index: I128,
+    /// Display compatibility only; authoritative rate is funding_rate_ppm.
     pub funding_rate_bps: i32,
+    pub funding_rate_ppm: i64,
+    pub controller: FundingController,
     pub funding_updated_at: u64,
     pub open_interest: U128,
     pub paused: bool,
 }
 #[near(serializers = [borsh, json])]
 #[derive(Clone)]
+pub struct FundingController {
+    pub mode: nearflow_funding::Mode,
+    pub params: nearflow_funding::Params,
+    pub revision: u32,
+    pub last_epoch: Option<u64>,
+    pub rate_applied_at: u64,
+    pub premium_ema_ppm: Option<i64>,
+    pub fallback: bool,
+}
+impl Default for FundingController {
+    fn default() -> Self {
+        Self {
+            mode: nearflow_funding::Mode::Baseline,
+            params: Default::default(),
+            revision: 1,
+            last_epoch: None,
+            rate_applied_at: 0,
+            premium_ema_ppm: None,
+            fallback: true,
+        }
+    }
+}
+#[near(serializers = [borsh, json])]
+#[derive(Clone)]
 pub struct Order {
+    pub strategy_id: Option<U64>,
     pub id: U64,
     pub owner: AccountId,
     pub market_id: u32,
@@ -78,6 +106,8 @@ pub struct Order {
 #[near(serializers = [borsh, json])]
 #[derive(Clone)]
 pub struct Pair {
+    pub long_strategy_id: Option<U64>,
+    pub short_strategy_id: Option<U64>,
     pub id: U64,
     pub market_id: u32,
     pub long: AccountId,
@@ -92,6 +122,8 @@ pub struct Pair {
 #[near(serializers = [borsh, json])]
 #[derive(Clone)]
 pub struct Trade {
+    pub maker_strategy_id: Option<U64>,
+    pub taker_strategy_id: Option<U64>,
     pub id: U64,
     pub market_id: u32,
     pub maker: AccountId,
@@ -108,6 +140,8 @@ pub struct Trade {
 #[near(serializers = [borsh, json])]
 #[derive(Clone)]
 pub struct Funding {
+    pub long_strategy_id: Option<U64>,
+    pub short_strategy_id: Option<U64>,
     pub id: U64,
     pub market_id: u32,
     pub long: AccountId,
@@ -117,6 +151,7 @@ pub struct Funding {
 }
 #[near(serializers = [json])]
 pub struct PositionView {
+    pub strategy_id: Option<U64>,
     pub position_id: U64,
     pub owner: AccountId,
     pub counterparty: AccountId,

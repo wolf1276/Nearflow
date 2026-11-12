@@ -1,9 +1,11 @@
 //! NEARFlow testnet isolated, collateral-capped bilateral perpetuals.
 //! Custody, order authorization, matching and settlement share ONE atomic state.
+mod controller;
 mod math;
 mod model;
 #[cfg(test)]
 mod rounding_tests;
+mod strategy;
 #[cfg(test)]
 mod tests;
 mod trading;
@@ -29,6 +31,7 @@ trait FungibleToken {
 #[allow(dead_code)]
 trait Callbacks {
     fn resolve_withdraw(&mut self, account_id: AccountId, amount: U128) -> bool;
+    fn resolve_strategy_withdraw(&mut self, withdrawal_id: U64) -> bool;
 }
 
 #[near(contract_state)]
@@ -43,6 +46,10 @@ pub struct Exchange {
     pairs: UnorderedMap<u64, Pair>,
     trades: UnorderedMap<u64, Trade>,
     funding: UnorderedMap<u64, Funding>,
+    strategies: UnorderedMap<u64, strategy::Strategy>,
+    strategy_withdrawals: UnorderedMap<u64, strategy::StrategyWithdrawal>,
+    next_strategy: u64,
+    next_strategy_withdrawal: u64,
     next_order: u64,
     next_pair: u64,
     next_trade: u64,
@@ -82,6 +89,10 @@ impl Exchange {
             pairs: UnorderedMap::new(b"p"),
             trades: UnorderedMap::new(b"t"),
             funding: UnorderedMap::new(b"f"),
+            strategies: UnorderedMap::new(b"s"),
+            strategy_withdrawals: UnorderedMap::new(b"w"),
+            next_strategy: 0,
+            next_strategy_withdrawal: 0,
             next_order: 0,
             next_pair: 0,
             next_trade: 0,
@@ -144,6 +155,8 @@ impl Exchange {
                 last_price: U128(0),
                 funding_index: I128(0),
                 funding_rate_bps: 0,
+                funding_rate_ppm: 0,
+                controller: FundingController::default(),
                 funding_updated_at: 0,
                 open_interest: U128(0),
                 paused: false,
@@ -188,18 +201,7 @@ impl Exchange {
         m.funding_updated_at = now;
         m.price = price;
         m.timestamp = timestamp;
-        // Premium-derived hourly rate, clamped to +/- 10 bps. A stale last trade
-        // is ignored: it cannot impose a permanent charge after a keeper outage.
-        let recent = self
-            .recent_market_trade(market_id)
-            .filter(|t| now.saturating_sub(t.timestamp) <= 3600);
-        m.funding_rate_bps = recent
-            .map(|t| {
-                let diff = t.price.0 as i128 - price.0 as i128;
-                let bps = mul_div(diff.unsigned_abs(), 10_000, price.0).min(10) as i32;
-                if diff < 0 { -bps } else { bps }
-            })
-            .unwrap_or(0);
+        // Publishing an index never advances the hourly controller or its EMA.
         self.markets.insert(&market_id, &m);
         event(
             "oracle_price",
@@ -268,6 +270,9 @@ impl Exchange {
             self.token_id,
             "Untrusted token"
         );
+        if msg.starts_with("strategy:") {
+            return self.strategy_on_transfer(sender_id, amount, &msg);
+        }
         if amount.0 == 0 || (msg != "" && msg != "insurance") {
             return PromiseOrValue::Value(amount);
         }
@@ -391,10 +396,7 @@ impl Exchange {
     }
     fn fresh_market(&self, id: u32) -> Market {
         let m = self.market(id);
-        assert!(
-            m.price.0 > 0 && now().saturating_sub(m.timestamp) <= ORACLE_MAX_AGE,
-            "Oracle stale"
-        );
+        assert!(oracle_fresh(&m, now()), "Oracle stale");
         m
     }
     fn recent_market_trade(&self, market_id: u32) -> Option<Trade> {
@@ -404,13 +406,13 @@ impl Exchange {
             .find(|t| t.market_id == market_id && t.kind == "open")
     }
     fn save_history(&mut self, order: &Order) {
-        let mut a = self.account(&order.owner);
+        let mut a = self.trading_account(&order.owner, order.strategy_id);
         a.history.retain(|o| o.nonce != order.nonce);
         a.history.push(order.clone());
         if a.history.len() > MAX_HISTORY {
             a.history.remove(0);
         }
-        self.accounts.insert(&order.owner, &a);
+        self.save_trading_account(order.strategy_id, &a);
     }
     fn record_trade(&mut self, mut trade: Trade) {
         trade.id = U64(self.next_trade);

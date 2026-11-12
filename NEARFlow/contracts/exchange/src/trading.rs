@@ -17,6 +17,17 @@ impl Exchange {
         post_only: bool,
         immediate_or_cancel: bool,
     ) -> Order {
+        self.place_book_order(None, market_id, is_long, size, limit_price, nonce, expiry_ts, leverage, reduce_only, post_only, immediate_or_cancel)
+    }
+    #[payable]
+    pub fn place_strategy_order(&mut self, strategy_id: U64, is_long: bool, size: U128, limit_price: U128, nonce: U64, expiry_ts: U64, leverage: u32, reduce_only: bool, post_only: bool, immediate_or_cancel: bool) -> Order {
+        let s = self.owned_strategy(strategy_id);
+        assert!(!s.closed && (!s.paused || reduce_only), "Strategy paused or closed");
+        self.place_book_order(Some(strategy_id), s.market_id, is_long, size, limit_price, nonce, expiry_ts, leverage, reduce_only, post_only, immediate_or_cancel)
+    }
+}
+impl Exchange {
+    fn place_book_order(&mut self, strategy_id: Option<U64>, market_id: u32, is_long: bool, size: U128, limit_price: U128, nonce: U64, expiry_ts: U64, leverage: u32, reduce_only: bool, post_only: bool, immediate_or_cancel: bool) -> Order {
         assert_one_yocto();
         let m = self.fresh_market(market_id);
         assert!(!self.paused && !m.paused || reduce_only, "Trading paused");
@@ -41,8 +52,8 @@ impl Exchange {
             "Post-only cannot be IOC"
         );
         let owner = env::predecessor_account_id();
-        self.prune_account_orders(&owner);
-        let mut a = self.account(&owner);
+        self.prune_account_orders(&owner, strategy_id);
+        let mut a = self.trading_account(&owner, strategy_id);
         assert!(nonce.0 > a.last_nonce.0, "Nonce already used");
         assert!(
             a.orders.len() < MAX_ORDERS && self.orders.len() < MAX_GLOBAL_ORDERS,
@@ -53,7 +64,7 @@ impl Exchange {
             "Position capacity reached"
         );
         a.last_nonce = nonce;
-        self.accounts.insert(&owner, &a);
+        self.save_trading_account(strategy_id, &a);
         let reserve_price = if is_long {
             limit_price.0.min(m.price.0 * 105 / 100)
         } else {
@@ -67,6 +78,7 @@ impl Exchange {
             ceil_div(value, leverage as u128) + fee(value) + 100
         };
         let mut order = Order {
+            strategy_id,
             id: U64(self.next_order),
             owner: owner.clone(),
             market_id,
@@ -87,7 +99,7 @@ impl Exchange {
         self.next_order += 1;
         if reduce_only {
             assert!(!post_only, "Reduce-only uses oracle execution");
-            let ids = self.account(&owner).positions;
+            let ids = self.trading_account(&owner, strategy_id).positions;
             let mut remaining = size.0;
             for id in ids {
                 if remaining == 0 {
@@ -118,7 +130,7 @@ impl Exchange {
         }
         a.available.0 -= reserved;
         a.orders.push(order.id.0);
-        self.accounts.insert(&owner, &a);
+        self.save_trading_account(strategy_id, &a);
         self.orders.insert(&order.id.0, &order);
         // Bounded automatic price-time matching. Remaining orders can be matched
         // permissionlessly by keepers; no private settlement signing key exists.
@@ -135,7 +147,7 @@ impl Exchange {
             self.cancel_internal(order.id.0);
         }
         let result = self.orders.get(&order.id.0).unwrap_or_else(|| {
-            self.account(&owner)
+            self.trading_account(&owner, strategy_id)
                 .history
                 .into_iter()
                 .find(|o| o.nonce == nonce)
@@ -144,6 +156,9 @@ impl Exchange {
         event("order", near_sdk::serde_json::to_value(&result).unwrap());
         result
     }
+}
+#[near]
+impl Exchange {
     #[payable]
     pub fn match_orders(&mut self, maker_id: U64, taker_id: U64) -> U64 {
         assert_one_yocto();
@@ -191,7 +206,7 @@ impl Exchange {
         assert_one_yocto();
         let p = self.pairs.get(&position_id.0).expect("Position not open");
         let actor = env::predecessor_account_id();
-        assert!(actor == p.long || actor == p.short, "Not position owner");
+        assert!((actor == p.long && p.long_strategy_id.is_none()) || (actor == p.short && p.short_strategy_id.is_none()), "Not position owner");
         let m = self.fresh_market(p.market_id);
         assert!(
             min_price.is_none_or(|v| m.price.0 >= v.0)
@@ -203,6 +218,23 @@ impl Exchange {
             amount.map(|v| v.0).unwrap_or(p.size.0),
             false,
         );
+    }
+    #[payable]
+    pub fn cancel_strategy_order(&mut self, strategy_id: U64, nonce: U64) {
+        assert_one_yocto();
+        let s = self.owned_strategy(strategy_id);
+        let id = s.orders.into_iter().find(|id| self.orders.get(id).unwrap().nonce == nonce).expect("Order not open");
+        self.cancel_internal(id);
+    }
+    #[payable]
+    pub fn close_strategy_position(&mut self, strategy_id: U64, position_id: U64, amount: Option<U128>, min_price: U128, max_price: U128) {
+        assert_one_yocto();
+        let s = self.owned_strategy(strategy_id);
+        let p = self.pairs.get(&position_id.0).expect("Position not open");
+        assert!((p.long == s.owner_id && p.long_strategy_id == Some(strategy_id)) || (p.short == s.owner_id && p.short_strategy_id == Some(strategy_id)), "Not strategy position");
+        let m = self.fresh_market(p.market_id);
+        assert!(min_price.0 <= m.price.0 && m.price.0 <= max_price.0, "Close slippage limit");
+        self.close_pair(position_id.0, amount.map(|v| v.0).unwrap_or(p.size.0), false);
     }
     #[payable]
     pub fn liquidate(&mut self, position_id: U64) {
@@ -233,7 +265,7 @@ impl Exchange {
         );
     }
     pub(crate) fn best_cross(&self, taker: &Order, m: &Market) -> Option<Order> {
-        if self.account(&taker.owner).positions.len() >= MAX_POSITIONS
+        if self.trading_account(&taker.owner, taker.strategy_id).positions.len() >= MAX_POSITIONS
             || self.pairs.len() >= MAX_GLOBAL_POSITIONS
         {
             return None;
@@ -243,6 +275,7 @@ impl Exchange {
             .map(|(_, o)| o)
             .filter(|o| {
                 o.id != taker.id
+                    && self.order_book_active(o) && self.order_book_active(taker)
                     && o.market_id == taker.market_id
                     && o.owner != taker.owner
                     && o.is_long != taker.is_long
@@ -253,7 +286,7 @@ impl Exchange {
                     } else {
                         taker.limit_price.0 <= o.limit_price.0
                     })
-                    && self.account(&o.owner).positions.len() < MAX_POSITIONS
+                    && self.trading_account(&o.owner, o.strategy_id).positions.len() < MAX_POSITIONS
                     && self.match_funded(o, taker, m)
             })
             .min_by(|a, b| {
@@ -284,7 +317,7 @@ impl Exchange {
         let mut maker = self.orders.get(&maker_id).expect("Maker not open");
         let mut taker = self.orders.get(&taker_id).expect("Taker not open");
         let mut m = self.fresh_market(maker.market_id);
-        assert!(!self.paused && !m.paused, "Trading paused");
+        assert!(!self.paused && !m.paused && self.order_book_active(&maker) && self.order_book_active(&taker), "Trading paused");
         assert!(
             maker_id < taker_id
                 && maker.market_id == taker.market_id
@@ -312,8 +345,8 @@ impl Exchange {
             "Global position capacity"
         );
         assert!(
-            self.account(&maker.owner).positions.len() < MAX_POSITIONS
-                && self.account(&taker.owner).positions.len() < MAX_POSITIONS,
+            self.trading_account(&maker.owner, maker.strategy_id).positions.len() < MAX_POSITIONS
+                && self.trading_account(&taker.owner, taker.strategy_id).positions.len() < MAX_POSITIONS,
             "Position capacity"
         );
         let value = notional(size, price.0);
@@ -322,6 +355,8 @@ impl Exchange {
         self.consume_order(&mut maker, size, maker_margin, fee(value));
         self.consume_order(&mut taker, size, taker_margin, fee(value));
         let pair = Pair {
+            long_strategy_id: if maker.is_long { maker.strategy_id } else { taker.strategy_id },
+            short_strategy_id: if maker.is_long { taker.strategy_id } else { maker.strategy_id },
             id: U64(self.next_pair),
             market_id: maker.market_id,
             long: if maker.is_long {
@@ -349,11 +384,11 @@ impl Exchange {
             last_funding_index: I128(funding_index(&m, now())),
             funding_remainder: I128(0),
         };
-        for owner in [&maker.owner, &taker.owner] {
-            let mut a = self.account(owner);
+        for (owner, book) in [(&maker.owner, maker.strategy_id), (&taker.owner, taker.strategy_id)] {
+            let mut a = self.trading_account(owner, book);
             a.positions.push(pair.id.0);
             a.stats.volume.0 += value;
-            self.accounts.insert(owner, &a);
+            self.save_trading_account(book, &a);
         }
         self.pairs.insert(&pair.id.0, &pair);
         self.next_pair += 1;
@@ -364,6 +399,7 @@ impl Exchange {
             id: U64(0),
             market_id: m.market_id,
             maker: maker.owner,
+            maker_strategy_id: maker.strategy_id, taker_strategy_id: taker.strategy_id,
             taker: taker.owner,
             is_long: taker.is_long,
             price,
@@ -378,7 +414,7 @@ impl Exchange {
     }
     fn consume_order(&mut self, order: &mut Order, size: u128, margin: u128, fee_amount: u128) {
         let share = reserve_share(order, size);
-        let mut a = self.account(&order.owner);
+        let mut a = self.trading_account(&order.owner, order.strategy_id);
         a.available.0 += share - margin - fee_amount;
         a.stats.fees.0 += fee_amount;
         self.insurance += fee_amount;
@@ -391,25 +427,25 @@ impl Exchange {
         } else {
             self.orders.insert(&order.id.0, order);
         }
-        self.accounts.insert(&order.owner, &a);
+        self.save_trading_account(order.strategy_id, &a);
         self.save_history(order);
     }
     fn cancel_internal(&mut self, id: u64) {
         let mut o = self.orders.remove(&id).expect("Order not open");
-        let mut a = self.account(&o.owner);
+        let mut a = self.trading_account(&o.owner, o.strategy_id);
         a.available.0 += o.margin.0;
         a.orders.retain(|v| *v != id);
-        self.accounts.insert(&o.owner, &a);
+        self.save_trading_account(o.strategy_id, &a);
         o.margin = U128(0);
         o.cancelled = true;
         self.save_history(&o);
         event(
             "order_cancelled",
-            json!({"owner": o.owner, "nonce": o.nonce, "filled_size": o.filled_size}),
+            json!({"owner": o.owner, "strategy_id": o.strategy_id, "nonce": o.nonce, "filled_size": o.filled_size}),
         );
     }
-    fn prune_account_orders(&mut self, owner: &AccountId) {
-        let a = self.account(owner);
+    fn prune_account_orders(&mut self, owner: &AccountId, book: Option<U64>) {
+        let a = self.trading_account(owner, book);
         for id in a.orders {
             if self.orders.get(&id).unwrap().expiry_ts.0 <= now() {
                 self.cancel_internal(id);
@@ -427,13 +463,14 @@ impl Exchange {
         if payment == 0 {
             return;
         }
-        let mut a = self.account(&p.long);
+        let mut a = self.trading_account(&p.long, p.long_strategy_id);
         a.stats.funding.0 -= payment;
-        self.accounts.insert(&p.long, &a);
-        let mut a = self.account(&p.short);
+        self.save_trading_account(p.long_strategy_id, &a);
+        let mut a = self.trading_account(&p.short, p.short_strategy_id);
         a.stats.funding.0 += payment;
-        self.accounts.insert(&p.short, &a);
+        self.save_trading_account(p.short_strategy_id, &a);
         let f = Funding {
+            long_strategy_id: p.long_strategy_id, short_strategy_id: p.short_strategy_id,
             id: U64(self.next_funding),
             market_id: p.market_id,
             long: p.long.clone(),
@@ -475,15 +512,16 @@ impl Exchange {
             a.available.0 += reward;
             self.accounts.insert(&caller, &a);
             let loser_id = if risk.0 { &p.long } else { &p.short };
-            let mut a = self.account(loser_id);
+            let book = if risk.0 { p.long_strategy_id } else { p.short_strategy_id };
+            let mut a = self.trading_account(loser_id, book);
             a.stats.liquidations += 1;
             a.stats.fees.0 += penalty;
-            self.accounts.insert(loser_id, &a);
+            self.save_trading_account(book, &a);
         }
-        for (owner, value, realized) in
-            [(&p.long, long_payout, pnl), (&p.short, short_payout, -pnl)]
+        for (owner, book, value, realized) in
+            [(&p.long, p.long_strategy_id, long_payout, pnl), (&p.short, p.short_strategy_id, short_payout, -pnl)]
         {
-            let mut a = self.account(owner);
+            let mut a = self.trading_account(owner, book);
             a.available.0 += value;
             a.stats.realized_pnl.0 += realized;
             a.stats.trades += 1;
@@ -494,7 +532,7 @@ impl Exchange {
             if amount == p.size.0 {
                 a.positions.retain(|i| *i != id);
             }
-            self.accounts.insert(owner, &a);
+            self.save_trading_account(book, &a);
         }
         if amount == p.size.0 {
             self.pairs.remove(&id);
@@ -512,6 +550,7 @@ impl Exchange {
             id: U64(0),
             market_id: m.market_id,
             maker: p.long,
+            maker_strategy_id: p.long_strategy_id, taker_strategy_id: p.short_strategy_id,
             taker: p.short,
             is_long: false,
             price: m.price,

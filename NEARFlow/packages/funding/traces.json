@@ -1,0 +1,8 @@
+[
+  {"name":"alternating sub-deadband noise","mode":"ADAPTIVE","params":{},"previous":0,"samples":[199,-199,199,-199,0],"ema":[199,0,99,-50,-25],"rates":[0,0,0,0,0]},
+  {"name":"persistent premium then reversal","mode":"ADAPTIVE","params":{},"previous":0,"samples":[10000,10000,-10000,-10000,-10000,0],"ema":[10000,10000,0,-5000,-7500,-3750],"rates":[400,720,576,176,-224,-579]},
+  {"name":"fast extreme and deadband boundaries","mode":"ADAPTIVE","params":{"step_ppm":2000,"smoothing_ppm":1000000,"ema_alpha_ppm":1000000,"deadband_ppm":2000,"nonlinear_scale_ppm":1000},"previous":0,"samples":[1999,2000,2001,3000,-3000,0],"ema":[1999,2000,2001,3000,-3000,0],"rates":[0,0,1,2000,0,0]},
+  {"name":"minimum coefficients preserve quantized memory","mode":"ADAPTIVE","params":{"cap_ppm":1,"step_ppm":1,"smoothing_ppm":1,"ema_alpha_ppm":1,"deadband_ppm":0,"nonlinear_scale_ppm":100000,"oracle_max_age_sec":1,"mark_max_age_sec":1},"previous":1,"samples":[100000,-100000,0],"ema":[100000,100000,100000],"rates":[1,1,1]},
+  {"name":"default quantization floor","mode":"ADAPTIVE","params":{},"previous":4,"samples":[0,0,0],"ema":[0,0,0],"rates":[4,4,4]},
+  {"name":"baseline uses same signal memory without slope cap","mode":"BASELINE","params":{},"previous":0,"samples":[10000,-10000,-10000,0],"ema":[10000,0,-5000,-2500],"rates":[2000,0,-2000,-2000]}
+]

@@ -1,4 +1,8 @@
 use super::*;
+include!("controller_tests.rs");
+include!("funding_assurance_tests.rs");
+include!("strategy_tests.rs");
+include!("strategy_trading_tests.rs");
 use near_sdk::{PromiseResult, test_utils::VMContextBuilder, testing_env};
 fn id(s: &str) -> AccountId {
     s.parse().unwrap()
@@ -246,7 +250,8 @@ fn future_oracle_rejected() {
 fn funding_is_zero_sum_and_cannot_be_replayed() {
     let mut e = matched();
     let mut m = e.market(1);
-    m.funding_rate_bps = 10;
+    m.funding_rate_ppm = 1000;
+    m.controller.rate_applied_at = 100;
     e.markets.insert(&1, &m);
     at("keeper.testnet", 1, 120);
     e.settle_funding(U64(0));
@@ -261,7 +266,8 @@ fn funding_is_zero_sum_and_cannot_be_replayed() {
 fn funding_stops_when_oracle_expires() {
     let mut e = matched();
     let mut m = e.market(1);
-    m.funding_rate_bps = 10;
+    m.funding_rate_ppm = 1000;
+    m.controller.rate_applied_at = 100;
     e.markets.insert(&1, &m);
     assert_eq!(funding_index(&m, 160), funding_index(&m, 5000));
 }

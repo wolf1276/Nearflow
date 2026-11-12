@@ -1,0 +1,14 @@
+[
+  {"mode":"BASELINE","premium":900,"previous":0,"rate":900},
+  {"mode":"BASELINE","premium":100000,"previous":-2000,"rate":2000},
+  {"mode":"BASELINE","premium":-100000,"previous":2000,"rate":-2000},
+  {"mode":"ADAPTIVE","premium":200,"previous":0,"rate":0},
+  {"mode":"ADAPTIVE","premium":201,"previous":0,"rate":0},
+  {"mode":"ADAPTIVE","premium":1200,"previous":0,"rate":220},
+  {"mode":"ADAPTIVE","premium":-1200,"previous":0,"rate":-220},
+  {"mode":"ADAPTIVE","premium":100000,"previous":0,"rate":400},
+  {"mode":"ADAPTIVE","premium":-100000,"previous":2000,"rate":1600},
+  {"mode":"ADAPTIVE","premium":0,"previous":1999,"rate":1600},
+  {"mode":"ADAPTIVE","premium":0,"previous":-1999,"rate":-1600},
+  {"mode":"ADAPTIVE","premium":2000,"previous":0,"rate":400}
+]

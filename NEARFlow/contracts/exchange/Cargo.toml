@@ -8,6 +8,7 @@ publish = false
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
+nearflow-funding = { path = "../../packages/funding" }
 uint = "0.10.0"
 near-sdk = { version = "=5.28.0", features = ["legacy"] }
 

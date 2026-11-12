@@ -1,0 +1,7 @@
+[
+  {"size":"1000000","entry":"100000000000000000000","price":"90000000000000000000","longMargin":"10000000","shortMargin":"10000000","index":"1000000000000000000","checkpoint":"0","remainder":"0","payment":"1000000","nextRemainder":"0","longPayout":"0","shortPayout":"20000000"},
+  {"size":"10000","entry":"100000000000000000000","price":"101000000000000000000","longMargin":"10000000","shortMargin":"10000000","index":"150000000000000","checkpoint":"0","remainder":"0","payment":"1","nextRemainder":"500000000000000000","longPayout":"10009999","shortPayout":"9990001"},
+  {"size":"1000000","entry":"100000000000000000000","price":"200000000000000000000","longMargin":"1","shortMargin":"10","index":"100000000000000000000","checkpoint":"0","remainder":"0","payment":"1","nextRemainder":"0","longPayout":"11","shortPayout":"0"},
+  {"size":"10000","entry":"100000000000000000000","price":"100000000000000000000","longMargin":"10000000","shortMargin":"10000000","index":"-50000000000000","checkpoint":"0","remainder":"500000000000000000","payment":"0","nextRemainder":"0","longPayout":"10000000","shortPayout":"10000000"},
+  {"size":"1000000","entry":"100000000000000000000","price":"50000000000000000000","longMargin":"15","shortMargin":"2","index":"-1000000000000000000","checkpoint":"0","remainder":"0","payment":"-2","nextRemainder":"0","longPayout":"0","shortPayout":"17"}
+]

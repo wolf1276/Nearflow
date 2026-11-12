@@ -1,0 +1,221 @@
+[
+  {
+    "name": "calibrated c177: alternating sub-deadband noise",
+    "mode": "ADAPTIVE",
+    "params": {
+      "version": 1,
+      "cap_ppm": 2000,
+      "step_ppm": 400,
+      "deadband_ppm": 0,
+      "smoothing_ppm": 500000,
+      "ema_alpha_ppm": 1000000,
+      "nonlinear_scale_ppm": 1000,
+      "max_premium_ppm": 100000,
+      "oracle_max_age_sec": 60,
+      "mark_max_age_sec": 300
+    },
+    "previous": 0,
+    "samples": [
+      199,
+      -199,
+      199,
+      -199,
+      0
+    ],
+    "ema": [
+      199,
+      -199,
+      199,
+      -199,
+      0
+    ],
+    "rates": [
+      119,
+      -59,
+      89,
+      -74,
+      -37
+    ]
+  },
+  {
+    "name": "calibrated c177: persistent premium then reversal",
+    "mode": "ADAPTIVE",
+    "params": {
+      "version": 1,
+      "cap_ppm": 2000,
+      "step_ppm": 400,
+      "deadband_ppm": 0,
+      "smoothing_ppm": 500000,
+      "ema_alpha_ppm": 1000000,
+      "nonlinear_scale_ppm": 1000,
+      "max_premium_ppm": 100000,
+      "oracle_max_age_sec": 60,
+      "mark_max_age_sec": 300
+    },
+    "previous": 0,
+    "samples": [
+      10000,
+      10000,
+      -10000,
+      -10000,
+      -10000,
+      0
+    ],
+    "ema": [
+      10000,
+      10000,
+      -10000,
+      -10000,
+      -10000,
+      0
+    ],
+    "rates": [
+      400,
+      800,
+      400,
+      0,
+      -400,
+      -200
+    ]
+  },
+  {
+    "name": "calibrated c177: fast extreme and deadband boundaries",
+    "mode": "ADAPTIVE",
+    "params": {
+      "version": 1,
+      "cap_ppm": 2000,
+      "step_ppm": 400,
+      "deadband_ppm": 0,
+      "smoothing_ppm": 500000,
+      "ema_alpha_ppm": 1000000,
+      "nonlinear_scale_ppm": 1000,
+      "max_premium_ppm": 100000,
+      "oracle_max_age_sec": 60,
+      "mark_max_age_sec": 300
+    },
+    "previous": 0,
+    "samples": [
+      1999,
+      2000,
+      2001,
+      3000,
+      -3000,
+      0
+    ],
+    "ema": [
+      1999,
+      2000,
+      2001,
+      3000,
+      -3000,
+      0
+    ],
+    "rates": [
+      400,
+      800,
+      1200,
+      1600,
+      1200,
+      800
+    ]
+  },
+  {
+    "name": "calibrated c177: minimum coefficients preserve quantized memory",
+    "mode": "ADAPTIVE",
+    "params": {
+      "version": 1,
+      "cap_ppm": 2000,
+      "step_ppm": 400,
+      "deadband_ppm": 0,
+      "smoothing_ppm": 500000,
+      "ema_alpha_ppm": 1000000,
+      "nonlinear_scale_ppm": 1000,
+      "max_premium_ppm": 100000,
+      "oracle_max_age_sec": 60,
+      "mark_max_age_sec": 300
+    },
+    "previous": 1,
+    "samples": [
+      100000,
+      -100000,
+      0
+    ],
+    "ema": [
+      100000,
+      -100000,
+      0
+    ],
+    "rates": [
+      401,
+      1,
+      1
+    ]
+  },
+  {
+    "name": "calibrated c177: default quantization floor",
+    "mode": "ADAPTIVE",
+    "params": {
+      "version": 1,
+      "cap_ppm": 2000,
+      "step_ppm": 400,
+      "deadband_ppm": 0,
+      "smoothing_ppm": 500000,
+      "ema_alpha_ppm": 1000000,
+      "nonlinear_scale_ppm": 1000,
+      "max_premium_ppm": 100000,
+      "oracle_max_age_sec": 60,
+      "mark_max_age_sec": 300
+    },
+    "previous": 4,
+    "samples": [
+      0,
+      0,
+      0
+    ],
+    "ema": [
+      0,
+      0,
+      0
+    ],
+    "rates": [
+      2,
+      1,
+      1
+    ]
+  },
+  {
+    "name": "calibrated c177: baseline uses same signal memory without slope cap",
+    "mode": "ADAPTIVE",
+    "params": {
+      "version": 1,
+      "cap_ppm": 2000,
+      "step_ppm": 400,
+      "deadband_ppm": 0,
+      "smoothing_ppm": 500000,
+      "ema_alpha_ppm": 1000000,
+      "nonlinear_scale_ppm": 1000,
+      "max_premium_ppm": 100000,
+      "oracle_max_age_sec": 60,
+      "mark_max_age_sec": 300
+    },
+    "previous": 0,
+    "samples": [
+      10000,
+      -10000,
+      -10000,
+      0
+    ],
+    "ema": [
+      10000,
+      -10000,
+      -10000,
+      0
+    ],
+    "rates": [
+      400,
+      0,
+      -400,
+      -200
+    ]
+  }
+]
