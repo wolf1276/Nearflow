@@ -1,6 +1,10 @@
-# NEARFlow
+# Reflex Perps
 
-NEAR-native perpetuals desk for **testnet and test funds only**.
+**Perpetual trading that adapts to the market.**
+
+Existing NEAR perpetuals desk for **testnet and test funds only**, extending into a controlled adaptive-funding / autonomous delta-neutral hedge product. The NEAR migration is complete; preserve the exchange and primary Trade terminal.
+
+The [roadmap](todo.md) and [architecture](ARCHITECTURE.md) preserve the existing DEX. Funding and a [real isolated testnet vault custody core](docs/VAULT_DESIGN.md) are implemented and locally verified: actual test-token deposits, owner-only allocation/pause/withdrawal and failed-payout recovery. Isolated owner-signed strategy trading and local independently persisted PAPER hedge execution/risk/replay are now implemented; run `cd client && npm run vault:paper` or `npm run test:phase2`. See [Phase 2 evidence and limitations](docs/PHASE2_ASSURANCE.md). The [local finalized-funding → bounded PAPER loop](docs/PHASE3_ASSURANCE.md) is also implemented (`npm run test:loop`), including an actual finalized Sandbox-to-PAPER integration. Genuine autonomous two-leg execution/on-chain feedback and the integrated Autopilot UI remain gated/unimplemented. Deterministic simulations are internal research infrastructure—not a standalone Stress Lab page. Existing NEARFlow directory/contract/UI identifiers have not yet been rebranded in code.
 
 ## Implemented
 
@@ -12,6 +16,7 @@ NEAR-native perpetuals desk for **testnet and test funds only**.
 - MyNearWallet integration, redirect confirmation, finalized JSON-RPC APIs, account history and lifetime leaderboard.
 - Six-decimal collateral/base sizes, 18-decimal prices and wide intermediate integer math.
 - Test token, Wasm build pipeline, deployment, oracle and keeper scripts.
+- Real isolated strategy custody within the same exchange ledger, fixed-owner payouts, paid bounded storage, replay-safe withdrawal callbacks and wallet-call helpers.
 
 ## Settlement model — read before trading
 
@@ -49,6 +54,8 @@ npm run build
 ## Deploy to NEAR testnet
 
 Create and fund separate `.testnet` contract, oracle and optional test-token accounts with NEAR tools/MyNearWallet. This repository does not contain funded accounts or private keys.
+
+**Fresh exchange deployment is mandatory for the current funding and strategy-custody state layouts.** Do not deploy over incompatible initialized/funded state. Close/settle/withdraw under the original code, then use a new contract account and explicit deposits; see [funding compatibility policy](docs/FUNDING.md).
 
 1. Set public account IDs and local credential file paths in `client/.env.local` (see example).
 2. Run `npm run contracts:build`, then `npm run deploy:testnet`. It refuses an already initialized deployment.

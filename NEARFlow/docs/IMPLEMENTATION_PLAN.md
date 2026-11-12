@@ -1,59 +1,39 @@
-# Reflex Perps — 35-commit delivery plan
+# Reflex Perps — proposed dependency-based implementation order
 
-Each numbered item is a focused commit, not an empty checkpoint. A commit is made only after its stated gate passes. Preserve the existing matched-orderbook exchange, custody ledger, keys, storage namespaces and tests. No invented LP skew, external trades or public deployment evidence.
+This supersedes the old 35-commit plan. No fixed commit count, standalone Stress Lab, migration or NFT work remains. [../todo.md](../todo.md) is the authoritative task/status list; [../ARCHITECTURE.md](../ARCHITECTURE.md) distinguishes inspected implementation from proposed modules.
 
-| # | Commit scope | Passing gate |
-|---|---|---|
-| 1 | `chore: initial setup` — existing NEAR exchange baseline and assumptions | Existing Rust/TS tests, Sandbox receipts, typecheck/lint/build pass; public-deployment blocker documented |
-| 2 | Record this delivery plan, verification and push policy | Plan identifies isolated extension points and remote prerequisite |
-| 3 | Funding signal schema, fixed-point units and parameter bounds | Invalid units/model/parameters rejected in unit tests |
-| 4 | Conventional premium-driven TypeScript baseline | Sign, linear response and absolute-cap tests |
-| 5 | Experimental premium-driven TypeScript Reflex controller | Continuous deadband, smoothing, slope/absolute caps and invalid-input fallback tests |
-| 6 | Pure Rust funding baseline | Fixed-point and extreme-input unit tests |
-| 7 | Pure Rust Reflex controller and guardrails | Rust cap, continuity, monotonic epoch and fallback tests |
-| 8 | Cross-language funding vectors | Rust and TS consume identical versioned vectors and agree exactly |
-| 9 | Matched-orderbook FundingSignal adapter | Recent mark separate from oracle; no net-OI signal; stale-input tests |
-| 10 | Separate funding-controller metadata storage | Existing Exchange/Market/Pair serialization remains compatible |
-| 11 | Owner-restricted, versioned controller configuration | Authorization, parameter bounds and change-log tests |
-| 12 | Lazy controller/index integration and views | Accrue previous rate before updates; preserve checkpoints and collateral invariant |
-| 13 | Adversarial controller/settlement properties | Replay, gap, rounding, reversal and conservation tests |
-| 14 | Extended NEAR Sandbox funding smoke tests | Actual Wasm switches modes without phantom balances; existing smoke tests preserved |
-| 15 | Versioned seven-scenario fixtures | Schema validation and stable fixture identities |
-| 16 | Seeded deterministic path/order generator | Identical seed generates identical exogenous inputs |
-| 17 | Explicit trader funding-response model | Both arms receive the same shocks; zero-sensitivity behavior tested |
-| 18 | Simulator collateral/margin/price-gap accounting | Use the existing capped bilateral model; expose shortfall definitions honestly |
-| 19 | Stress metrics, oscillation and failure measurement | Derived metrics tested against known traces |
-| 20 | Reproducible JSON/CSV export and run identities | Parameters, source version, seed and outputs round-trip |
-| 21 | Sensitivity sweeps and reproducible evaluation fixtures | At least three seeds/scenario; zero/weak/strong response; report negative results |
-| 22 | Labeled paper spot/perp execution adapters | Partial/failed/pending fills represented independently |
-| 23 | Guardian policy bounds, owner and permission model | No withdrawal or arbitrary recipient actions; turnover/gross/reserve limits tested |
-| 24 | Deterministic Guardian state machine | Authorized transitions and invalid-transition rejection |
-| 25 | Stable execution IDs and reconciliation | Duplicate/out-of-order status events cannot duplicate exposure |
-| 26 | Bounded repair, pause and unwind decisions | Retry/cost/oracle limits, manual stop and pending reconciliation tests |
-| 27 | Guardian scenario integration and telemetry | Failed-leg/delta duration, costs, policy hash and reason reproducible |
-| 28 | Funding, strategy-preview and Lab read APIs | Validated requests, bounded resource use and clear mode labels |
-| 29 | Simulation/quote/proposal APIs | No real-funds mutation or forged on-chain authority; input-size/rate limits |
-| 30 | Stress Lab comparison UI | Real shared-time data, scenario/seed/sensitivity controls, play/reset/export, accessible table |
-| 31 | PAPER Autopilot UI and break-hedge demo | Independent fills, repair/retry/pause/close and visible policy/cost/delta |
-| 32 | Trade funding state and Reflex navigation | Existing trade journey retained; rates/interval/model/environment visible |
-| 33 | Research, threat model and evaluation documentation | Formulas/trust/capped-PnL differences and negative results disclosed |
-| 34 | Browser smoke tests and 120-second demo runbook | Trade/Lab/PAPER Guardian journeys verified; public-testnet signing not fabricated |
-| 35 | CI, clean-install reproducibility and submission review | Full existing+new suite/build, branding/secret scan; final report and push if remote available |
+**The user approved real testnet custody before PAPER hedge implementation.** V0a now implements and locally verifies that core; see [VAULT_DESIGN.md](VAULT_DESIGN.md). Autonomous hedge execution, public deployment and genuine spot remain gated. Ponytail is mandatory in `../AGENTS.md`.
 
-## Verification policy
+## Order and gates
 
-- Run the narrow test for each commit; full suites at phase boundaries and final review.
-- Do not commit failing/incomplete modules simply to reach a number. Amend the plan with evidence if a task needs splitting; remain within the requested 30–40 meaningful commits.
-- Contract controller storage must be additive; do not silently reset or migrate the exchange ledger.
-- Existing NEAR custody/settlement remains authoritative. The default Guardian demo is PAPER and cannot move funds.
-- Public testnet wallet verification requires funded accounts and operator signing. An absent deployment remains a documented blocker, not a passing test.
+| Step | Roadmap tasks | Deliverable and gate |
+| --- | --- | --- |
+| 0 (complete) | A0–A2 | Baseline reverified; scope, same-ledger isolation, fixed-owner payouts, PAPER-first sequence and release boundaries accepted in [PHASE0_DECISIONS.md](PHASE0_DECISIONS.md). Real authority/venue interfaces remain separate review gates. |
+| 1 | F2, F3 specification | Align effective freshness/fallback/rate expiry across contract, risk/read views and keeper; decide hysteresis/sparse-market behavior. Current equations remain the experimental reference until changes are approved. |
+| 2 (parallel) | V0a (done), V0, V1, S0 | Real isolated custody and owner exits are implemented/tested. Extend with explicit strategy trading reservations/policy, independent PAPER hedge adapters and deterministic internal harness. PAPER fills cannot credit or move real collateral. |
+| 3 | V2–V7 | Policy/state machine → conservative net-carry sizing → stable execution/reconciliation → watchdog/bounded repair → owner pause/unwind/settled withdrawal → decision replay. No genuine custody automation before authorization/isolation tests pass. |
+| 4 | C0–C2, S1–S2 | Connect PAPER feedback loop; test shared liquidity/cooldown/turnover/anti-recursion limits. Identical-seed comparisons and vault-on/off ablations include negative results. Feed evidence back into F3 calibration and C1 limits. |
+| 5 | F3 completion, F4 | Freeze reviewed funding parameters/behavior; property-test accounting, configuration and rounding; rehearse safe fresh-account deployment. No incompatible in-place upgrades. |
+| 6 | U0–U3 | Integrate funding and Autopilot into the existing Trade terminal, with per-leg modes, cost/risk/P&L and manual controls. No separate Lab route. API projections/proposals never substitute for on-chain authority. |
+| 7 | S3, D0 | Full browser/security/CI/regression and clean-clone reproduction; document threat model, research limitations, provenance and new-vs-existing work. |
+| 8 (separate approval) | V8, D1 | Operator-funded accounts and fresh public deployment; real perp delegation and genuine spot venue separately approved/tested. If spot is unavailable, retain explicit PAPER strategies; do not claim a live vault. |
+| 9 | D2–D3 | Rehearse integrated 100–120 second trade → funding → permitted strategy → reversal/imbalance → safe response demo; publish only with operator-authorized repository/accounts and actual evidence. |
 
-## Git and push policy
+Funding-only UI work U0 can be staged after the funding gate without waiting for the complete Autopilot panel. Internal PAPER feedback tests do **not** depend on real execution/public provisioning; this avoids a research/deployment dependency cycle. Provisioning accounts can happen earlier operationally, but no release or genuine-hedge claim bypasses F4/S3/V8 gates.
 
-The working repository is the existing Git root above `NEARFlow/`; initial setup commit is `4910d16` on `master`. No remote was configured when this plan was created. The owner must supply the destination repository URL (or configure a remote) before any push. Never push to the cloned source repository, guess a GitHub owner, publish credentials, force-push, or bypass hooks. Once a destination is authorized, push passing phase checkpoints and the final branch normally, preserving history.
+## Validation policy
 
-## Status
+- A checked task must cite executed tests or concrete inspection for its exact scope, not merely a file's existence.
+- Keep existing Rust/TS/Sandbox regressions passing. Run focused tests per change and all suites/lint/typecheck/build at gates.
+- Simulations use the actual matched, bilateral capped model and explicit trader/vault response. Preserve shared exogenous conditions, record source/seed/parameters, and report failures.
+- Readiness, data freshness and policy validation must agree with authoritative contract behavior.
+- New custody/permissions require on-chain enforcement and adversarial tests; a keeper key is not automatically a safe strategy authority.
+- Stop on unresolved accounting, serialization, oracle, venue or delegation blockers. Never invent a deployment address, interface, live spot fill or transaction link.
 
-- Commits 1–2: baseline and plan recorded.
-- Public testnet deployment: not configured.
-- Push: blocked pending destination repository URL.
+## Commit/publication policy
+
+Prefer focused commits at passing gates; no empty checkpoints or arbitrary commit quota. Keep pre-existing exchange work distinguishable from funding, vault and integration changes. Preserve history and storage/event identifiers unless a separate reviewed change requires otherwise. No push/publication or account operations without an operator-authorized destination and credentials; never commit secrets, guess an owner, force-push or bypass hooks.
+
+## Current checkpoint
+
+Real isolated testnet custody V0a is complete locally: 78 exchange Rust tests, 3 funding Rust tests, 33 TS tests and 2 Sandbox integrations passed, plus lint/typecheck/build. Next complete F2 consistency and design bounded strategy trading/reservations on top of the existing custody core. Genuine spot integration and delegated trading authority remain separate review gates; no public deployment is claimed.

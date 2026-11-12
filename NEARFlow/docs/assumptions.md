@@ -1,36 +1,46 @@
-# Reflex Perps — inspected assumptions and Phase 0 gate
+# Reflex Perps — inspected constraints and unresolved decisions
 
-## Existing exchange (before Reflex extension)
+## Verified codebase facts
 
-- Market model: **MATCHED_ORDERBOOK**, isolated bilateral lots. `trading.rs::execute_match` creates a long and a short with equal size. `views.rs::open_interest` returns the same aggregate size for both sides. There is no LP counterparty or vAMM inventory.
-- Authoritative ledger: `contracts/exchange/src/lib.rs::Exchange`; accounts, order escrow, pair margin, funding checkpoints and asynchronous token withdrawals all belong to this one contract. Do not create a second collateral/position ledger for Reflex.
-- SDK: near-sdk **5.28.0**; existing token contract uses near-contract-standards 5.28.0. Preserve these versions.
-- Price: independent trusted publisher via `publish_price`. The existing oracle script requires at least two of Binance, Coinbase and KuCoin; rejects >3% divergence. Contract prices are 1e18 USD, positive and <=1e27, monotonically timestamped, <=10 seconds old on ingress, and usable for 60 seconds. Last execution is separate from the independent index.
-- Collateral: one immutable allowlisted six-decimal NEP-141 test token; deploy script checks metadata. The supplied faucet token is test money, not real USDC.
-- Margin: isolated paired escrow, max 10x leverage. Payouts are capped by counterparty escrow, not uncapped cross-margin claims. Either party can close the bilateral lot. Reduce-only executes owned opposing lots at oracle price. Pause blocks new risk but permits oracle-valid closes/reductions, cancellation and unlocked withdrawal.
-- Funding: one signed price-per-base cumulative index, opposite transfers within each pair, lazy checkpoints and fractional remainder. Existing premium-derived rate cap is 10 bps/hour. Existing `publish_price` is the extension point; controller updates must first accrue the old rate/index.
+- NEAR migration is complete. Preserve existing near-sdk **5.28.0**, NEAR wallet paths and exchange rather than introducing another chain/matching engine.
+- **MATCHED_ORDERBOOK** with isolated bilateral lots. `trading.rs::execute_match` creates equal long/short size; `views.rs::open_interest` reports equal aggregates. No LP counterparty, vAMM inventory or defensible net-OI skew exists.
+- `contracts/exchange/src/lib.rs::Exchange` is authoritative for collateral, order escrow, pair margin and withdrawals. Frontend engine/vault/orderGateway aliases refer to that exchange. Real isolated strategy custody is implemented in `strategy.rs`; autonomous strategy trading does not exist.
+- One immutable allowlisted six-decimal NEP-141 test token. Faucet test collateral is not real USDC. No supported additional-token onboarding or live spot custody is implied.
+- Prices are independent trusted-publisher observations, 1e18 USD/base, positive and <=1e27, monotonically timestamped and <=10 seconds old on ingress. Oracle script uses at least two feeds and rejects >3% divergence. Execution does not trust browser chart prices.
+- Default freshness is 60 seconds; `fresh_market` now supports shorter configured ages. Hard-coded 60-second consumers in views/API/keeper remain an explicit F2 hardening task, not a verified consistent system.
+- Max 10x testnet leverage; isolated margins; collateral-capped bilateral P&L/funding. Either counterparty may close a pair. Pause permits oracle-valid closes/reductions, cancellation and unlocked withdrawals; stale oracle can block close/liquidation.
+- Funding uses one signed cumulative index and lazy pair/remainder settlement. Current working-tree controller supports BASELINE/ADAPTIVE, premium EMA, soft deadband, caps, bounded parameters, once-per-hour epochs and owner configuration. The old 10-bps-per-hour oracle-tick controller is not the current working-tree behavior.
+- Market serialization changed with funding metadata and root Exchange serialization changed with strategy custody maps/counters: **fresh deployment required**, no safe in-place migration implemented. Existing funded state must never be reset.
+- Existing main interface is `client/app/trade/[market]/page.tsx` with chart/book/ticket/positions. Backend is finalized read-only projection, not an execution relay or guardian service.
 
-## Interfaces and extension points
+## Vault risk assumptions that require design and tests
 
-| Need | Existing method/module | Extension |
-|---|---|---|
-| Market/price | `get_market`, `get_markets`, `get_price` | derive premium signal from recent matched execution, not OI difference |
-| Funding accounting | `math.rs::funding_index`, `trading.rs::apply_funding` | retain existing lazy settlement and remainders |
-| Controller authority | owner/oracle checks | owner-configured algorithm; deterministic on-chain output, never a caller-provided rate |
-| Orders | `place_order`, `cancel_order`, `close_position` | unchanged wallet-signed execution |
-| Health/exit | `positions`, `account_health`, `liquidate` | preserve risk and collateral checks |
-| Lab | new `packages/sim` | deterministic, no custody mutation |
-| Guardian | new `packages/risk`, paper adapter | PAPER only by default; no token or withdrawal authority |
-| HTTP | `client/app/api/[...path]/route.ts` | simulation/read-only proposals only; real orders stay wallet-authorized |
+1. Local delta neutrality does not guarantee offsetting payoffs: capped short gains can stop covering spot losses, funding can exhaust payer collateral and a counterparty can close the perp leg.
+2. Genuine spot/perp execution is asynchronous and non-atomic; pending, partial and failed fills need independent reconciliation. External venue custody/finality must be explicitly chosen and reviewed.
+3. Isolated strategy allocation must partition real spendable balances, not copy them into another ledger. No pooled share/NAV accounting is necessary for this scope.
+4. Automation may trade/reduce only within contract-enforced owner policy. A service key or authenticated API is not permission to withdraw, replace owner or redirect payouts.
+5. Expected net carry is uncertain and must include both-leg entry/exit/repair costs, depth, margin/reserve, possible rate reversal and collectible bilateral funding. High nominal funding alone is not sufficient to enter.
+6. Funding and vault activity form endogenous feedback; liquidity budgets, persistence/cooldown, turnover/cost caps and anti-recursion controls are required. Beneficial stabilization is a measured hypothesis, not an assumption.
 
-## Evidence and blocker
+## Extension points and remaining work
 
-Phase 0 local baseline: 41 Rust tests, 27 TypeScript tests, clean lint/typecheck/build and a real NEAR Sandbox 2.14.0 receipt-chain smoke test pass. Sandbox covers token registration/deposit, two-account matched long/short, finalized API positions/fills, PnL/funding, close, cap refund, liquidation, failed withdrawal restoration and successful withdrawal. Wallet action serialization and redirect-result logic are unit-tested; an interactive wallet signing session has not been claimed.
+| Need | Reuse | Proposed extension |
+| --- | --- | --- |
+| Signals/controller | `controller.rs`, `packages/funding`, market views | consistency, hysteresis/sparse-market review, calibrated bounded parameters |
+| Strategy custody | implemented `strategy.rs`, accounts and withdrawal callbacks | isolated allocations/owner exits verified; add explicit trading reservations and strategy positions, not a second exchange ledger |
+| Execution/authority | wallet/receipt code, contract order/close checks | PAPER-first independent adapters; later explicitly restricted delegation |
+| Monitoring/repair | positions, health, liquidation views | deterministic policy/state machine, idempotent reconciliation, bounded repair/pause/unwind |
+| Controlled feedback | finalized controller state and actual matched fills | conservative opportunity coordinator and shared liquidity/turnover budgets |
+| Internal validation | pure math and Sandbox | proposed `packages/sim`, versioned fixtures and CLI; **no standalone Lab page** |
+| Frontend | existing Trade terminal and payment history | integrated funding and Autopilot panel, no replacement trading UI |
+| Backend | existing read-only API | bounded validated strategy reads/quotes/proposals; real writes retain on-chain authority |
 
-**Public testnet verification is blocked:** `.env.local` is absent and `.env.local.example` contains blank contract/token IDs and credential paths. No public deployment address, available real USDC contract or successful public transaction can be inferred. Do not report Sandbox transactions as public testnet activity. The operator must provision/fund accounts, deploy and run the documented manual wallet smoke test before a live submission demo.
+## Evidence boundary
 
-This gate permits isolated, offline/testnet-build extension development on the verified local exchange, not a claim of public deployment or production readiness. Autopilot remains PAPER. NEAR Intents/live spot integration is not implemented or implied.
+Current local results: **78 exchange Rust, 3 funding Rust and 33 TS tests passed**; 2 Sandbox receipt-chain integrations, lint, typecheck and production build passed. See [EXTENSION_STATUS.md](EXTENSION_STATUS.md) for exact scope. These are current working-tree results; broader security/property/browser tests remain open.
 
-## Reflex hypothesis for this market
+Real isolated custody was verified in local Wasm Sandbox, including token payout and failure recovery. No public deployment, interactive browser-wallet trade, genuine spot adapter or autonomous hedge vault was verified. `.env.local` is absent. Operator-funded accounts and actual transaction/receipt evidence are prerequisites for a public demo claim. Sandbox is not public testnet; PAPER is not onchain.
 
-Use premium EMA and a normalized premium response, not pool capacity/skew. The matched-orderbook Reflex experiment is separately labeled; no hyperbolic pool-skew advantage is claimed. The same exogenous paths, seeds, fees and agent response are used for both arms. Sensitivity=0 is mandatory and can falsify an improvement claim.
+## Phase 0 decisions and remaining approvals
+
+Phase 0 scope/constraints/sequence are accepted in [PHASE0_DECISIONS.md](PHASE0_DECISIONS.md): isolated same-ledger strategy allocations, fixed-owner payouts and PAPER-first hedge execution. The user approved real testnet custody first; its implemented accounting/ABI/limits are documented in [VAULT_DESIGN.md](VAULT_DESIGN.md). Review strategy trading policy/reservations before implementation, and hysteresis/sparse-market semantics, real spot venue feasibility and delegated execution separately. The final product is Reflex Perps with internal stress testing; migration, NFTs, unrelated features and a standalone Market Stress Lab are excluded.
