@@ -7,6 +7,7 @@ import { ACTIVE_MARKETS, MarketConfig } from "@/config";
 import { getOpenInterest } from "@/lib/near/contracts";
 import { formatAmount, formatChangePercent, formatMarketUsd, priceToHuman } from "@/lib/format";
 import { useMarketStore } from "@/stores/market";
+import { FundingStatus } from "./FundingStatus";
 import { logoFor } from "@/components/common/AssetLogos";
 
 const CaretIcon = () => (
@@ -181,6 +182,7 @@ export function MarketHeader({ market }: { market: MarketConfig }) {
         </span>
       </div>
 
+      <FundingStatus marketId={market.marketId} />
       {/* Stats strip */}
       <div className="flex h-full min-w-0 flex-1 items-center gap-5 px-2">
         {statItems.map((s, i) => (

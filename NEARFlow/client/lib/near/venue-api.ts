@@ -1,7 +1,8 @@
 import { CONTRACTS, ASSETS } from "@/config";
 import { isAccountId } from "./account";
 import { view } from "./rpc";
-import type { ChainAccount, ChainFunding, ChainHealth, ChainMarket, ChainOrder, ChainTrade, VenueStatus } from "./types";
+import { fundingView, oracleFresh, oracleExpiresAt } from "./funding";
+import type { ChainAccount, ChainFunding, ChainHealth, ChainOrder, ChainTrade, FundingSnapshot } from "./types";
 
 const usd = (v: string) => Number(v) / 1e6;
 export type ReadContract = <T>(method: string, args?: Record<string, unknown>) => Promise<T>;
@@ -25,16 +26,23 @@ export async function venueGet(url: URL, rpc: ReadContract = read): Promise<{ st
   if (q.has("network") && q.get("network") !== "testnet") return { status: 400, body: { error: "Only NEAR testnet is supported" } };
   try {
     if (path[0] === "health" || path[0] === "ready") {
-      const status = await rpc<VenueStatus>("status");
-      const markets = await rpc<ChainMarket[]>("get_markets");
-      const fresh = markets.length > 0 && markets.every(m => BigInt(m.price) > 0n && Date.now() / 1000 - m.timestamp <= 60 && !m.paused);
+      const { timestamp, status, markets } = await rpc<FundingSnapshot>("funding_snapshot");
+      if (!Number.isSafeInteger(timestamp) || timestamp < 0) throw new Error("Invalid snapshot time");
+      const observedAt = Math.floor(Date.now() / 1000);
+      const fresh = markets.length > 0 && markets.every(m => oracleFresh(m, timestamp) && oracleFresh(m, observedAt) && !m.paused);
       const tokenMatches = status.token_id === ASSETS.usdc;
       const ready = !status.paused && fresh && tokenMatches && status.model === "isolated-bilateral-capped";
       return { status: path[0] === "ready" && !ready ? 503 : 200,
-        body: { ...status, ready, oracleFresh: fresh, tokenMatches, configuredToken: ASSETS.usdc } };
+        body: { ...status, ready, oracleFresh: fresh, tokenMatches, configuredToken: ASSETS.usdc, asOf: timestamp,
+          readyUntil: markets.length ? Math.min(...markets.map(oracleExpiresAt)) : null } };
     }
     if (path[0] === "markets") {
-      if (!path[1]) return ok(await rpc("get_markets"));
+      if (!path[1]) {
+        const snapshot = await rpc<FundingSnapshot>("funding_snapshot");
+        if (!Number.isSafeInteger(snapshot.timestamp) || snapshot.timestamp < 0) throw new Error("Invalid snapshot time");
+        const observedAt = Math.floor(Date.now() / 1000);
+        return ok(snapshot.markets.map(m => ({ ...m, ...fundingView(m, snapshot.timestamp, observedAt) })));
+      }
       const market_id = Number(path[1]); if (!Number.isSafeInteger(market_id) || market_id < 1 || market_id > 8) throw new Error("BAD_MARKET");
       if (path[2] === "orderbook") return ok(await rpc("orderbook", { market_id }));
       const trades = await rpc<ChainTrade[]>("get_trades", { market_id, limit: 512 });
@@ -52,11 +60,14 @@ export async function venueGet(url: URL, rpc: ReadContract = read): Promise<{ st
         return ok([...buckets.values()]);
       }
       if (path[2]) return { status: 404, body: { error: "Unknown market endpoint" } };
-      const m = await rpc<ChainMarket>("get_market", { market_id });
+      const snapshot = await rpc<FundingSnapshot>("funding_snapshot");
+      if (!Number.isSafeInteger(snapshot.timestamp) || snapshot.timestamp < 0) throw new Error("Invalid snapshot time");
+      const m = snapshot.markets.find(m => m.market_id === market_id);
+      if (!m) return { status: 404, body: { error: "Market not configured" } };
       const recent = trades.filter(t => t.kind === "open" && Date.now() / 1000 - t.timestamp < 86400);
       const volume = recent.reduce((v, t) => v + BigInt(t.size) * BigInt(t.price) / 10n ** 18n, 0n);
       return ok({ ...m, last_price: m.last_price, long_open_interest: m.open_interest, short_open_interest: m.open_interest,
-        volume: volume.toString(), historyWindow: "latest-512-events", funding_rate: m.funding_rate_bps / 10000 });
+        volume: volume.toString(), historyWindow: "latest-512-events", ...fundingView(m, snapshot.timestamp, Math.floor(Date.now() / 1000)) });
     }
     if (path[0] === "orders") {
       if (path[1] && path[1] !== "list") return { status: 405, body: { error: "Authorize order changes directly in your NEAR wallet" } };

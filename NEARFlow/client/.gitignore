@@ -1,9 +1,12 @@
 node_modules/
 .next/
+.next-e2e/
 out/
 dist/
 *.tsbuildinfo
 .env*
 !.env.local.example
+test-results/
+playwright-report/
 .DS_Store
 *.log

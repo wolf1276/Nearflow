@@ -25,6 +25,6 @@ export async function send(account: Account, methodName: string, args: object, c
 }
 export async function read<T>(account: Account, methodName: string, args: object = {}, contractId = exchangeId): Promise<T> {
   requireAccountId(contractId);
-  return account.viewFunction({ contractId, methodName, args });
+  return account.viewFunction({ contractId, methodName, args, blockQuery: { finality: "final" } });
 }
 export const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));

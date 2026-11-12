@@ -11,6 +11,8 @@ const csp = [
   "worker-src 'self' blob:",
 ].join("; ");
 const config: NextConfig = {
+  distDir: process.env.NEARFLOW_E2E === "1" ? ".next-e2e" : ".next",
+  typescript: { tsconfigPath: process.env.NEARFLOW_E2E === "1" ? "tsconfig.e2e.json" : "tsconfig.json" },
   output: "standalone", reactCompiler: true, poweredByHeader: false,
   turbopack: { root: __dirname },
   async headers() { return [{ source: "/:path*", headers: [

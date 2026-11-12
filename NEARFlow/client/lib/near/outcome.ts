@@ -16,6 +16,6 @@ export function validateOutcome(outcome: TransactionOutcome, action: PendingActi
   let decoded: unknown;
   try { decoded = value ? JSON.parse(atob(value)) : null; } catch { throw new Error("Unexpected contract return value"); }
   if (action.methodName === "ft_transfer_call" && decoded !== action.args.amount) throw new Error("Token transfer was refunded in whole or part. Refresh balances before retrying.");
-  if (action.methodName === "withdraw" && decoded !== true) throw new Error("Withdrawal did not complete; refresh the restored vault balance");
+  if ((action.methodName === "withdraw" || action.methodName === "withdraw_strategy") && decoded !== true) throw new Error("Withdrawal did not complete; refresh the restored vault balance");
   return outcome.transaction.hash;
 }

@@ -11,9 +11,11 @@ test("only a finalized, fully consumed token transfer confirms a deposit", () =>
 test("receipt failures and recovered withdrawals do not appear confirmed", () => {
   const o = outcome("1000000"); o.receipts_outcome.push({ outcome: { status: { Failure: {} } } });
   assert.throws(() => validateOutcome(o, action), /receipt failed/);
-  const withdrawal = { ...action, methodName: "withdraw" };
-  assert.throws(() => validateOutcome(outcome(false), withdrawal), /did not complete/);
-  assert.equal(validateOutcome(outcome(true), withdrawal), "hash");
+  for (const methodName of ["withdraw", "withdraw_strategy"]) {
+    const withdrawal = { ...action, methodName };
+    assert.throws(() => validateOutcome(outcome(false), withdrawal), /did not complete/);
+    assert.equal(validateOutcome(outcome(true), withdrawal), "hash");
+  }
 });
 test("callback rejects another sender, receiver and pending execution", () => {
   const o = outcome("1000000"); o.transaction.signer_id = "bob.testnet"; assert.throws(() => validateOutcome(o, action), /signer/);

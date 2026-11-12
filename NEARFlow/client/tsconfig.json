@@ -32,6 +32,7 @@
   ],
   "exclude": [
     "node_modules",
+    ".next-e2e",
     // `scripts/` used to be excluded wholesale, which left every keeper, the
     // matcher, the settlement reconciler and the deploy tooling — the most
     // operationally critical code in the repo — unchecked by `tsc --noEmit`
